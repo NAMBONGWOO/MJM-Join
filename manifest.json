@@ -2,7 +2,7 @@
   "name": "마중물 장학회 법인설립 창립멤버 가입",
   "short_name": "마중물 장학회",
   "description": "사단법인 마중물 장학회 창립 발기인 가입 신청",
-  "start_url": "./mazungmul-pwa.html",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#1a4f3a",
   "theme_color": "#1a4f3a",
