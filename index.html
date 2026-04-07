@@ -12,355 +12,486 @@
 <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Serif+KR:wght@400;600&display=swap" rel="stylesheet">
-
 <style>
-  :root {
-    --primary: #1a4f3a;
-    --primary-light: #2d7a58;
-    --primary-pale: #e8f5ee;
-    --accent: #c9a84c;
-    --accent-light: #f5e9c8;
-    --text-main: #1a1a1a;
-    --text-sub: #444;
-    --text-hint: #999;
-    --border: #ddd;
-    --border-focus: #2d7a58;
-    --bg: #f5f5f5;
-    --bg-card: #fff;
-    --danger: #c0392b;
-    --danger-bg: #fdecea;
-    --shadow: 0 1px 6px rgba(0,0,0,0.08);
-    --radius: 10px;
-    --topbar-h: 50px;
-    --tab-h: 60px;
-  }
+:root {
+  --primary: #1a4f3a;
+  --primary-light: #2d7a58;
+  --primary-pale: #e8f5ee;
+  --accent: #c9a84c;
+  --accent-light: #f5e9c8;
+  --text-main: #1a1a1a;
+  --text-sub: #444;
+  --text-hint: #999;
+  --border: #ddd;
+  --border-focus: #2d7a58;
+  --bg: #f5f5f5;
+  --bg-card: #fff;
+  --danger: #c0392b;
+  --danger-bg: #fdecea;
+  --shadow: 0 1px 6px rgba(0,0,0,0.08);
+  --radius: 10px;
+  --topbar-h: 50px;
+  --tab-h: 60px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { height: 100%; }
+body {
+  height: 100%;
+  font-family: 'Noto Sans KR', sans-serif;
+  background: #222;
+  color: var(--text-main);
+  -webkit-font-smoothing: antialiased;
+  display: flex;
+  justify-content: center;
+}
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+/* ── 앱 컨테이너: 모바일엔 100%, 데스크탑엔 430px 중앙 ── */
+#app {
+  width: 100%;
+  max-width: 430px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  box-shadow: 0 0 60px rgba(0,0,0,0.5);
+}
 
-  body {
-    font-family: 'Noto Sans KR', sans-serif;
-    background: var(--bg);
-    color: var(--text-main);
-    min-height: 100vh;
-    -webkit-font-smoothing: antialiased;
-  }
+/* ── TOPBAR (flex 아이템, sticky 불필요) ── */
+.topbar {
+  flex-shrink: 0;
+  height: var(--topbar-h);
+  background: #1c1c1c;
+  display: flex; align-items: center; justify-content: center;
+  padding: 0 48px;
+  position: relative;
+}
+.topbar h1 { font-size: 15px; font-weight: 500; color: #fff; letter-spacing: -0.2px; }
+.topbar-menu {
+  position: absolute; left: 14px;
+  background: none; border: none; cursor: pointer;
+  color: #fff; padding: 8px;
+  display: flex; flex-direction: column; gap: 5px;
+}
+.topbar-menu span { display: block; width: 22px; height: 1.5px; background: #fff; border-radius: 2px; }
 
-  /* ─── TOP BAR ─── */
-  .topbar {
-    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-    height: var(--topbar-h);
-    background: #1c1c1c;
-    display: flex; align-items: center; justify-content: center;
-    padding: 0 48px;
-  }
-  .topbar h1 {
-    font-size: 15px; font-weight: 500;
-    color: #fff; letter-spacing: -0.2px;
-  }
-  .topbar-menu {
-    position: absolute; left: 14px;
-    background: none; border: none; cursor: pointer;
-    color: #fff; padding: 8px;
-    display: flex; flex-direction: column; gap: 5px;
-  }
-  .topbar-menu span {
-    display: block; width: 22px; height: 1.5px;
-    background: #fff; border-radius: 2px;
-  }
+/* ── SCROLL AREA (grows to fill, scrolls internally) ── */
+.scroll-area {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
 
-  /* ─── MAIN ─── */
-  .main {
-    padding-top: var(--topbar-h);
-    padding-bottom: calc(var(--tab-h) + 8px);
-  }
-  .page { display: none; }
-  .page.active { display: block; }
+/* ── TAB BAR (flex 아이템, 항상 하단 고정) ── */
+.tab-bar {
+  flex-shrink: 0;
+  height: var(--tab-h);
+  background: #fff;
+  border-top: 1px solid #e0e0e0;
+  display: flex;
+  box-shadow: 0 -2px 10px rgba(0,0,0,0.07);
+}
+.tab-item {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 3px; cursor: pointer;
+  border: none; background: none; padding: 0;
+  color: #aaa; font-family: inherit;
+  transition: color 0.18s;
+  -webkit-tap-highlight-color: transparent;
+  border-top: 2.5px solid transparent;
+}
+.tab-item.active { color: var(--primary); border-top-color: var(--primary); }
+.tab-icon-svg { width: 22px; height: 22px; }
+.tab-label { font-size: 10px; font-weight: 500; letter-spacing: -0.3px; text-align: center; line-height: 1.3; }
 
-  /* ─── LOGO AREA ─── */
-  .logo-area {
-    background: var(--primary);
-    padding: 28px 20px 22px;
-    text-align: center;
-    color: #fff;
-  }
-  .logo-img {
-    width: 90px; height: 90px; border-radius: 50%;
-    object-fit: cover;
-    display: block; margin: 0 auto 14px;
-    background: #fff;
-    box-shadow: 0 3px 14px rgba(0,0,0,0.25);
-  }
-  /* 이미지 로드 실패시 이모지 폴백 */
-  .logo-img-fallback {
-    width: 90px; height: 90px; border-radius: 50%;
-    background: #fff;
-    display: none; align-items: center; justify-content: center;
-    font-size: 46px; margin: 0 auto 14px;
-    box-shadow: 0 3px 14px rgba(0,0,0,0.25);
-  }
-  .logo-area h2 {
-    font-family: 'Noto Serif KR', serif;
-    font-size: 18px; font-weight: 600; margin-bottom: 5px;
-  }
-  .logo-area p { font-size: 12px; opacity: 0.8; line-height: 1.5; }
+/* ── PAGES ── */
+.page { display: none; }
+.page.active { display: block; }
 
-  .counter-strip {
-    background: var(--accent);
-    color: #fff; text-align: center;
-    padding: 9px 20px;
-    font-size: 13px; font-weight: 500;
-    display: flex; align-items: center; justify-content: center; gap: 6px;
-  }
-  .counter-strip strong { font-size: 17px; }
+/* ── LOGO ── */
+.logo-area {
+  background: var(--primary);
+  padding: 28px 20px 22px;
+  text-align: center; color: #fff;
+}
+.logo-img {
+  width: 90px; height: 90px; border-radius: 50%;
+  object-fit: cover; display: block; margin: 0 auto 14px;
+  background: #fff; box-shadow: 0 3px 14px rgba(0,0,0,0.25);
+}
+.logo-fallback {
+  width: 90px; height: 90px; border-radius: 50%;
+  background: #fff; display: none; align-items: center; justify-content: center;
+  font-size: 46px; margin: 0 auto 14px;
+  box-shadow: 0 3px 14px rgba(0,0,0,0.25);
+}
+.logo-area h2 { font-family: 'Noto Serif KR', serif; font-size: 18px; font-weight: 600; margin-bottom: 5px; }
+.logo-area p { font-size: 12px; opacity: 0.82; line-height: 1.5; }
 
-  /* ─── SECTION HEADER ─── */
-  .section-header {
-    background: var(--primary);
-    color: #fff; padding: 22px 20px 16px; text-align: center;
-  }
-  .section-header h2 {
-    font-family: 'Noto Serif KR', serif;
-    font-size: 18px; font-weight: 600;
-  }
+.counter-strip {
+  background: var(--accent); color: #fff;
+  padding: 9px 20px; font-size: 13px; font-weight: 500;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+.counter-strip strong { font-size: 17px; }
 
-  /* ─── CARD ─── */
-  .card {
-    background: var(--bg-card);
-    border-radius: var(--radius);
-    box-shadow: var(--shadow);
-    margin: 12px 14px;
-    overflow: hidden;
-  }
-  .card-body { padding: 16px 18px; }
-  .card-title {
-    font-size: 14px; font-weight: 700;
-    color: var(--primary);
-    margin-bottom: 12px;
-    display: flex; align-items: center; gap: 7px;
-    padding-bottom: 10px;
-    border-bottom: 1px solid #eee;
-  }
-  .card-title .icon {
-    font-size: 16px;
-  }
+/* ── SECTION HEADER ── */
+.section-header {
+  background: var(--primary); color: #fff;
+  padding: 22px 20px 16px; text-align: center;
+}
+.section-header h2 { font-family: 'Noto Serif KR', serif; font-size: 18px; font-weight: 600; }
 
-  /* ─── DOC TEXT — tight spacing ─── */
-  .doc-text {
-    font-size: 13.5px;
-    line-height: 1.65;
-    color: var(--text-sub);
-  }
-  .doc-text .doc-chapter {
-    font-size: 14px; font-weight: 700;
-    color: var(--primary);
-    margin: 12px 0 6px;
-  }
-  .doc-text .doc-chapter:first-child { margin-top: 0; }
-  .doc-text .doc-article {
-    margin-bottom: 6px;
-    padding-left: 0;
-  }
-  .doc-text .doc-article strong {
-    color: var(--text-main); font-weight: 600;
-  }
+/* ── CARD ── */
+.card {
+  background: var(--bg-card); border-radius: var(--radius);
+  box-shadow: var(--shadow); margin: 12px 14px;
+}
+.card-body { padding: 16px 18px; }
+.card-title {
+  font-size: 14px; font-weight: 700; color: var(--primary);
+  margin-bottom: 12px; display: flex; align-items: center; gap: 7px;
+  padding-bottom: 10px; border-bottom: 1px solid #eee;
+}
 
-  /* ─── INFO BANNER ─── */
-  .info-banner {
-    background: var(--accent-light);
-    border-left: 3px solid var(--accent);
-    padding: 10px 14px;
-    border-radius: 0 8px 8px 0;
-    font-size: 12.5px; color: #5a4200; line-height: 1.55;
-    margin: 0 14px 12px;
-  }
+/* ── DOC TEXT ── */
+.doc-text { font-size: 13.5px; line-height: 1.65; color: var(--text-sub); }
+.doc-chapter { font-size: 14px; font-weight: 700; color: var(--primary); margin: 12px 0 5px; }
+.doc-chapter:first-child { margin-top: 0; }
+.doc-article { margin-bottom: 5px; }
+.doc-article strong { color: var(--text-main); font-weight: 600; }
 
-  /* ─── FORM ─── */
-  .form-page-title {
-    text-align: center; padding: 20px 20px 4px;
-  }
-  .form-page-title h2 {
-    font-family: 'Noto Serif KR', serif;
-    font-size: 18px; font-weight: 600; color: var(--primary);
-  }
-  .form-page-title p {
-    font-size: 12px; color: var(--text-hint); margin-top: 4px;
-  }
+/* ── INFO BANNER ── */
+.info-banner {
+  background: var(--accent-light); border-left: 3px solid var(--accent);
+  padding: 10px 14px; border-radius: 0 8px 8px 0;
+  font-size: 12.5px; color: #5a4200; line-height: 1.55;
+  margin: 0 14px 12px;
+}
 
-  .form-group { margin-bottom: 15px; }
-  .form-label {
-    display: flex; align-items: center; justify-content: space-between;
-    font-size: 12.5px; font-weight: 500;
-    color: var(--text-sub); margin-bottom: 6px;
-  }
-  .form-label .required { color: var(--danger); font-size: 11px; font-weight: 400; }
+/* ── FORM ── */
+.form-page-title { text-align: center; padding: 20px 20px 4px; }
+.form-page-title h2 { font-family: 'Noto Serif KR', serif; font-size: 18px; font-weight: 600; color: var(--primary); }
+.form-page-title p { font-size: 12px; color: var(--text-hint); margin-top: 4px; }
 
-  .form-input {
-    width: 100%; border: 1.5px solid var(--border); border-radius: 8px;
-    padding: 11px 13px; font-size: 14px;
-    font-family: 'Noto Sans KR', sans-serif;
-    color: var(--text-main); background: #fff;
-    transition: border-color 0.2s; outline: none;
-    -webkit-appearance: none; appearance: none;
-  }
-  .form-input:focus { border-color: var(--border-focus); }
-  .form-input::placeholder { color: var(--text-hint); }
+.form-group { margin-bottom: 15px; }
+.form-label {
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 12.5px; font-weight: 500; color: var(--text-sub); margin-bottom: 6px;
+}
+.form-label .required { color: var(--danger); font-size: 11px; font-weight: 400; }
 
-  .input-suffix { position: relative; }
-  .input-suffix .form-input { padding-right: 48px; }
-  .input-suffix .suffix-text {
-    position: absolute; right: 13px; top: 50%;
-    transform: translateY(-50%);
-    font-size: 13px; color: var(--text-hint); pointer-events: none;
-  }
+.form-input {
+  width: 100%; border: 1.5px solid var(--border); border-radius: 8px;
+  padding: 11px 13px; font-size: 14px; font-family: 'Noto Sans KR', sans-serif;
+  color: var(--text-main); background: #fff;
+  transition: border-color 0.2s; outline: none;
+  -webkit-appearance: none; appearance: none;
+}
+.form-input:focus { border-color: var(--border-focus); }
+.form-input::placeholder { color: var(--text-hint); }
 
-  .address-search-btn {
-    width: 100%; background: var(--primary-pale);
-    border: 1.5px solid var(--primary-light); color: var(--primary);
-    border-radius: 8px; padding: 10px 13px;
-    font-size: 13px; font-weight: 500;
-    font-family: 'Noto Sans KR', sans-serif; cursor: pointer;
-    display: flex; align-items: center; justify-content: center; gap: 7px;
-    margin-bottom: 7px; transition: background 0.2s;
-  }
-  .address-search-btn:active { background: #c0deca; }
+.input-suffix { position: relative; }
+.input-suffix .form-input { padding-right: 48px; }
+.input-suffix .suffix-text {
+  position: absolute; right: 13px; top: 50%; transform: translateY(-50%);
+  font-size: 13px; color: var(--text-hint); pointer-events: none;
+}
 
-  /* ─── PAYMENT ─── */
-  .payment-options { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-  .payment-option { position: relative; }
-  .payment-option input[type="radio"] { position: absolute; opacity: 0; width: 0; height: 0; }
-  .payment-option label {
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    padding: 12px 6px; border: 1.5px solid var(--border); border-radius: 10px;
-    cursor: pointer; font-size: 12px; font-weight: 500;
-    color: var(--text-sub); text-align: center; line-height: 1.4;
-    transition: all 0.18s; min-height: 66px; background: #fff;
-  }
-  .payment-option label .pay-icon { font-size: 20px; margin-bottom: 5px; }
-  .payment-option input[type="radio"]:checked + label {
-    border-color: var(--primary); background: var(--primary-pale); color: var(--primary);
-  }
+.address-search-btn {
+  width: 100%; background: var(--primary-pale);
+  border: 1.5px solid var(--primary-light); color: var(--primary);
+  border-radius: 8px; padding: 10px 13px;
+  font-size: 13px; font-weight: 500; font-family: 'Noto Sans KR', sans-serif;
+  cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 7px;
+  margin-bottom: 7px; transition: background 0.2s;
+}
+.address-search-btn:active { background: #c0deca; }
 
-  /* ─── SEPARATOR ─── */
-  .form-separator { height: 1px; background: #eee; margin: 16px 0; }
+.payment-options { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+.payment-option { position: relative; }
+.payment-option input[type="radio"] { position: absolute; opacity: 0; width: 0; height: 0; }
+.payment-option label {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 12px 6px; border: 1.5px solid var(--border); border-radius: 10px;
+  cursor: pointer; font-size: 12px; font-weight: 500;
+  color: var(--text-sub); text-align: center; line-height: 1.4;
+  transition: all 0.18s; min-height: 66px; background: #fff;
+}
+.payment-option label .pay-icon { font-size: 20px; margin-bottom: 5px; }
+.payment-option input[type="radio"]:checked + label {
+  border-color: var(--primary); background: var(--primary-pale); color: var(--primary);
+}
 
-  /* ─── CHECKBOX ─── */
-  .checkbox-group { display: flex; flex-direction: column; gap: 8px; }
-  .checkbox-item {
-    display: flex; align-items: flex-start; gap: 10px;
-    padding: 12px 13px; border: 1.5px solid var(--border);
-    border-radius: 10px; background: #fff; cursor: pointer; transition: all 0.18s;
-  }
-  .checkbox-item.checked { border-color: var(--primary); background: var(--primary-pale); }
-  .checkbox-item input[type="checkbox"] { display: none; }
-  .custom-check {
-    width: 20px; height: 20px; flex-shrink: 0;
-    border: 2px solid var(--border); border-radius: 5px; background: #fff;
-    display: flex; align-items: center; justify-content: center;
-    transition: all 0.18s; margin-top: 1px;
-  }
-  .checkbox-item.checked .custom-check { background: var(--primary); border-color: var(--primary); }
-  .check-mark { display: none; color: #fff; font-size: 12px; }
-  .checkbox-item.checked .check-mark { display: block; }
-  .checkbox-label { font-size: 12.5px; line-height: 1.55; color: var(--text-sub); }
-  .checkbox-item.checked .checkbox-label { color: var(--primary); }
-  .checkbox-label .req-tag {
-    display: inline-block; background: var(--danger-bg); color: var(--danger);
-    font-size: 10px; padding: 1px 5px; border-radius: 4px; margin-left: 3px; vertical-align: middle;
-  }
+.form-separator { height: 1px; background: #eee; margin: 16px 0; }
 
-  /* ─── SUBMIT ─── */
-  .submit-btn {
-    width: 100%; background: var(--primary); color: #fff;
-    border: none; border-radius: 10px; padding: 15px;
-    font-size: 15px; font-weight: 700;
-    font-family: 'Noto Sans KR', sans-serif; cursor: pointer;
-    letter-spacing: -0.3px; transition: background 0.2s, transform 0.1s; margin-top: 6px;
-  }
-  .submit-btn:active { transform: scale(0.98); background: #0d3327; }
-  .submit-btn:disabled { background: #bbb; cursor: not-allowed; }
+.checkbox-group { display: flex; flex-direction: column; gap: 8px; }
+.checkbox-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 12px 13px; border: 1.5px solid var(--border);
+  border-radius: 10px; background: #fff; cursor: pointer; transition: all 0.18s;
+}
+.checkbox-item.checked { border-color: var(--primary); background: var(--primary-pale); }
+.checkbox-item input[type="checkbox"] { display: none; }
+.custom-check {
+  width: 20px; height: 20px; flex-shrink: 0;
+  border: 2px solid var(--border); border-radius: 5px; background: #fff;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.18s; margin-top: 1px;
+}
+.checkbox-item.checked .custom-check { background: var(--primary); border-color: var(--primary); }
+.check-mark { display: none; color: #fff; font-size: 12px; }
+.checkbox-item.checked .check-mark { display: block; }
+.checkbox-label { font-size: 12.5px; line-height: 1.55; color: var(--text-sub); }
+.checkbox-item.checked .checkbox-label { color: var(--primary); }
+.checkbox-label .req-tag {
+  display: inline-block; background: var(--danger-bg); color: var(--danger);
+  font-size: 10px; padding: 1px 5px; border-radius: 4px; margin-left: 3px; vertical-align: middle;
+}
 
-  /* ─── SUCCESS ─── */
-  .success-screen { display: none; text-align: center; padding: 48px 24px; }
-  .success-icon {
-    width: 76px; height: 76px; border-radius: 50%; background: var(--primary-pale);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 38px; margin: 0 auto 18px;
-  }
-  .success-screen h3 { font-size: 20px; font-weight: 700; color: var(--primary); margin-bottom: 10px; }
-  .success-screen p { font-size: 13.5px; color: var(--text-sub); line-height: 1.7; }
-  .back-btn {
-    margin-top: 22px; display: inline-block; padding: 11px 26px;
-    background: var(--primary); color: #fff; border-radius: 8px;
-    font-size: 13.5px; font-weight: 500; cursor: pointer; border: none; font-family: inherit;
-  }
+.submit-btn {
+  width: 100%; background: var(--primary); color: #fff;
+  border: none; border-radius: 10px; padding: 15px;
+  font-size: 15px; font-weight: 700; font-family: 'Noto Sans KR', sans-serif;
+  cursor: pointer; transition: background 0.2s, transform 0.1s; margin-top: 6px;
+}
+.submit-btn:active { transform: scale(0.98); background: #0d3327; }
+.submit-btn:disabled { background: #bbb; cursor: not-allowed; }
 
-  /* ─── BOTTOM TAB ─── */
-  .tab-bar {
-    position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
-    background: #fff; border-top: 1px solid #e0e0e0;
-    display: flex; height: var(--tab-h);
-    box-shadow: 0 -2px 10px rgba(0,0,0,0.07);
-  }
-  .tab-item {
-    flex: 1; display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    gap: 3px; cursor: pointer;
-    border: none; background: none; padding: 0;
-    color: #aaa; font-family: inherit;
-    transition: color 0.18s;
-    -webkit-tap-highlight-color: transparent;
-    border-top: 2px solid transparent;
-  }
-  .tab-item.active {
-    color: var(--primary);
-    border-top-color: var(--primary);
-  }
-  /* SVG 아이콘 */
-  .tab-icon-svg { width: 22px; height: 22px; }
-  .tab-label { font-size: 10px; font-weight: 500; letter-spacing: -0.3px; text-align: center; line-height: 1.3; }
+.success-screen { display: none; text-align: center; padding: 48px 24px; }
+.success-icon {
+  width: 76px; height: 76px; border-radius: 50%; background: var(--primary-pale);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 38px; margin: 0 auto 18px;
+}
+.success-screen h3 { font-size: 20px; font-weight: 700; color: var(--primary); margin-bottom: 10px; }
+.success-screen p { font-size: 13.5px; color: var(--text-sub); line-height: 1.7; }
+.back-btn {
+  margin-top: 22px; display: inline-block; padding: 11px 26px;
+  background: var(--primary); color: #fff; border-radius: 8px;
+  font-size: 13.5px; font-weight: 500; cursor: pointer; border: none; font-family: inherit;
+}
 
-  /* ─── TOAST ─── */
-  .toast {
-    position: fixed; bottom: calc(var(--tab-h) + 14px); left: 50%;
-    transform: translateX(-50%) translateY(10px);
-    background: rgba(0,0,0,0.78); color: #fff;
-    padding: 9px 18px; border-radius: 18px;
-    font-size: 13px; opacity: 0;
-    transition: all 0.25s; pointer-events: none; z-index: 200; white-space: nowrap;
-  }
-  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+/* ── TOAST ── */
+.toast {
+  position: fixed; bottom: 80px; left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  background: rgba(0,0,0,0.78); color: #fff;
+  padding: 9px 18px; border-radius: 18px;
+  font-size: 13px; opacity: 0;
+  transition: all 0.25s; pointer-events: none; z-index: 200; white-space: nowrap;
+}
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-  /* ─── LOADING ─── */
-  .loading-overlay {
-    display: none; position: fixed; inset: 0; z-index: 300;
-    background: rgba(0,0,0,0.38); align-items: center; justify-content: center;
-  }
-  .loading-overlay.show { display: flex; }
-  .loading-box { background: #fff; border-radius: 14px; padding: 28px 36px; text-align: center; }
-  .spinner {
-    width: 36px; height: 36px; border: 3.5px solid #eee;
-    border-top-color: var(--primary); border-radius: 50%;
-    animation: spin 0.75s linear infinite; margin: 0 auto 14px;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
-  .loading-text { font-size: 13.5px; color: var(--text-sub); }
-
-  @media (min-width: 480px) {
-    .main, .tab-bar, .topbar { max-width: 430px; }
-    .tab-bar, .topbar { left: 50%; right: auto; transform: translateX(-50%); }
-  }
+/* ── LOADING ── */
+.loading-overlay {
+  display: none; position: fixed; inset: 0; z-index: 300;
+  background: rgba(0,0,0,0.38); align-items: center; justify-content: center;
+}
+.loading-overlay.show { display: flex; }
+.loading-box { background: #fff; border-radius: 14px; padding: 28px 36px; text-align: center; }
+.spinner {
+  width: 36px; height: 36px; border: 3.5px solid #eee;
+  border-top-color: var(--primary); border-radius: 50%;
+  animation: spin 0.75s linear infinite; margin: 0 auto 14px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-text { font-size: 13.5px; color: var(--text-sub); }
 </style>
 </head>
 <body>
 
-<!-- Top Bar -->
-<div class="topbar">
-  <button class="topbar-menu" onclick="toggleMenu()">
-    <span></span><span></span><span></span>
-  </button>
-  <h1 id="topbar-title">법인 기본 정관</h1>
-</div>
+<div id="app">
 
+  <!-- TOPBAR -->
+  <div class="topbar">
+    <button class="topbar-menu" onclick="toggleMenu()">
+      <span></span><span></span><span></span>
+    </button>
+    <h1 id="topbar-title">법인 기본 정관</h1>
+  </div>
+
+  <!-- SCROLL AREA -->
+  <div class="scroll-area" id="scrollArea">
+
+    <!-- PAGE 1 -->
+    <div class="page active" id="page-constitution">
+      <div class="logo-area">
+        <img class="logo-img" id="logoImg" src="icon.png" alt="마중물 장학회 로고"
+             onerror="this.style.display='none';document.getElementById('logoFallback').style.display='flex';">
+        <div class="logo-fallback" id="logoFallback">🌱</div>
+        <h2>사단법인 마중물 장학회</h2>
+        <p>더불어 함께하는 세상을 향한<br>한국-베트남 장학 재단</p>
+      </div>
+      <div class="counter-strip">
+        <span>창립 발기인</span><strong id="counter-display">0</strong><span>/ 50명 모집 중</span>
+      </div>
+      <div class="card">
+        <div class="card-body">
+          <div class="card-title">📋 법인 기본 정관</div>
+          <div class="doc-text">
+            <div class="doc-chapter">[제1장 총칙]</div>
+            <div class="doc-article"><strong>제1조(명칭)</strong> 이 법인은 "재단법인 마중물 장학회"(이하 "본회"라 한다)라 한다.</div>
+            <div class="doc-article"><strong>제2조(목적)</strong> 본회는 경제적 어려움을 겪는 유능한 인재들에게 장학금을 지원하여 학업에 전념할 수 있도록 돕고, 사회 발전에 기여하는 인재를 육성함을 목적으로 한다.</div>
+            <div class="doc-article"><strong>제3조(사무소의 소재지)</strong> 본회의 사무소는 경기도 수원시에 둔다.</div>
+            <div class="doc-article"><strong>제4조(사업)</strong> 본회는 제2조의 목적을 달성하기 위하여 다음의 사업을 한다.<br>① 국내외 유학생 및 저소득 청소년에 대한 장학금 지급<br>② 장학생 선발 및 관리에 관한 사항<br>③ 학술·문화 교류 행사의 기획 및 운영<br>④ 한국-베트남 교육 협력 사업<br>⑤ 기타 본회의 목적달성에 필요한 사업</div>
+            <div class="doc-chapter">[제2장 회원]</div>
+            <div class="doc-article"><strong>제5조(회원의 종류)</strong> 본회의 회원은 다음 각 호와 같이 구분한다.<br>① 창립 발기인: 법인 설립에 동의하고 약정금을 납부하는 자<br>② 정회원: 본회의 목적에 동의하고 가입 절차를 완료한 자<br>③ 후원회원: 본회의 사업을 재정적으로 지원하는 자</div>
+            <div class="doc-article"><strong>제6조(입회)</strong> 본회에 가입하고자 하는 자는 소정의 가입 신청서를 제출하고 이사회의 승인을 얻어야 한다.</div>
+            <div class="doc-article"><strong>제7조(회원의 권리)</strong> 회원은 총회에 출석하여 의결권을 행사할 수 있다.</div>
+            <div class="doc-article"><strong>제8조(회원의 의무)</strong> 회원은 본 정관 및 총회·이사회의 의결 사항을 준수하고 소정의 회비를 납부하여야 한다.</div>
+            <div class="doc-chapter">[제3장 임원]</div>
+            <div class="doc-article"><strong>제9조(임원의 종류)</strong> 본회에 다음의 임원을 둔다.<br>① 이사장 1인&nbsp;&nbsp;② 이사 5인 이상 15인 이하&nbsp;&nbsp;③ 감사 2인</div>
+            <div class="doc-article"><strong>제10조(임원의 임기)</strong> 이사의 임기는 2년으로 하고, 감사의 임기는 2년으로 한다. 임원은 연임할 수 있다.</div>
+          </div>
+        </div>
+      </div>
+      <div class="info-banner">💡 법인 설립에는 발기인 50인 이상의 참여가 필요합니다. <strong>회원가입</strong> 탭에서 창립 발기인으로 참여해 주세요.</div>
+    </div>
+
+    <!-- PAGE 2 -->
+    <div class="page" id="page-privacy">
+      <div class="section-header"><h2>개인정보 수집 및 활용 동의서(안)</h2></div>
+      <div class="card">
+        <div class="card-body">
+          <div class="doc-text">
+            <div class="doc-article">(재)마중물 장학회는 법인 설립 및 발기인 관리를 위하여 아래와 같이 개인정보를 수집·이용하고자 합니다.</div>
+            <div class="doc-chapter">1. 수집하는 개인정보 항목</div>
+            <div class="doc-article">성명, 생년월일, 주소, 연락처(휴대전화), 약정 후원금액 및 납부 방식, 전자서명 데이터</div>
+            <div class="doc-chapter">2. 개인정보의 수집 및 이용 목적</div>
+            <div class="doc-article">• 비영리 법인(재단법인) 설립 허가 신청 및 발기인 명부 작성<br>• 장학회 창립총회 안내 및 법인 운영 관련 고지사항 전달<br>• 기부금 영수증 발급 및 후원금 관리(법인 설립 후)</div>
+            <div class="doc-chapter">3. 개인정보의 보유 및 이용 기간</div>
+            <div class="doc-article">개인정보 수집 및 이용 목적이 달성된 후에는 해당 정보를 지체 없이 파기합니다. 단, 관련 법령(사회복지법인 및 비영리법인 설립·운영에 관한 규칙 등)에 의하여 보존할 필요가 있는 경우 해당 기간 동안 보관합니다.</div>
+            <div class="doc-chapter">4. 동의의 거부 권리 및 불이익</div>
+            <div class="doc-article">귀하는 개인정보 수집 및 이용에 거부할 권리가 있습니다. 단, 동의를 거부하실 경우 법인 설립 발기인 등록이 불가능할 수 있음을 알려드립니다.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE 3 -->
+    <div class="page" id="page-join">
+      <div id="formView">
+        <div class="form-page-title">
+          <h2>창립 멤버 가입</h2>
+          <p>발기인 정보를 입력해 주세요</p>
+        </div>
+        <div class="card">
+          <div class="card-body">
+            <div class="form-group">
+              <div class="form-label">이름 <span class="required">필수입력</span></div>
+              <input type="text" class="form-input" id="f_name" placeholder="실명을 입력해 주세요" autocomplete="name">
+            </div>
+            <div class="form-group">
+              <div class="form-label">생년월일 (6자리) <span class="required">필수입력</span></div>
+              <input type="text" class="form-input" id="f_birth" placeholder="예) 850315" maxlength="6" inputmode="numeric">
+            </div>
+            <div class="form-group">
+              <div class="form-label">연락처 (-제외) <span class="required">필수입력</span></div>
+              <input type="tel" class="form-input" id="f_phone" placeholder="예) 01012345678" maxlength="11" inputmode="numeric">
+            </div>
+            <div class="form-group">
+              <div class="form-label">주소 <span class="required">필수입력</span></div>
+              <button class="address-search-btn" onclick="searchAddress()">🔍 주소 검색 (카카오 우편번호)</button>
+              <input type="text" class="form-input" id="f_addr1" placeholder="기본 주소" readonly
+                style="margin-bottom:7px;background:#f9f9f9;cursor:pointer;" onclick="searchAddress()">
+              <input type="text" class="form-input" id="f_addr2" placeholder="상세 주소 입력">
+            </div>
+            <div class="form-group">
+              <div class="form-label">약정금액 <span class="required">필수입력</span></div>
+              <div class="input-suffix">
+                <input type="number" class="form-input" id="f_amount" placeholder="0" inputmode="numeric" min="0">
+                <span class="suffix-text">만원</span>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="form-label">납부방식</div>
+              <div class="payment-options">
+                <div class="payment-option">
+                  <input type="radio" name="payment" id="pay_transfer" value="계좌이체">
+                  <label for="pay_transfer"><span class="pay-icon">🏦</span>계좌이체</label>
+                </div>
+                <div class="payment-option">
+                  <input type="radio" name="payment" id="pay_card" value="신용카드">
+                  <label for="pay_card"><span class="pay-icon">💳</span>신용카드</label>
+                </div>
+                <div class="payment-option">
+                  <input type="radio" name="payment" id="pay_cms" value="CMS">
+                  <label for="pay_cms"><span class="pay-icon">🔄</span>CMS</label>
+                </div>
+              </div>
+            </div>
+            <div class="form-separator"></div>
+            <div class="form-group">
+              <div class="form-label" style="margin-bottom:10px;">필수 동의 항목</div>
+              <div class="checkbox-group">
+                <div class="checkbox-item" onclick="toggleCheck(this,'chk1')">
+                  <input type="checkbox" id="chk1">
+                  <div class="custom-check"><span class="check-mark">✓</span></div>
+                  <div class="checkbox-label">마중물 장학회 법인 설립 취지서 전문을 읽고 이해하였음에 동의합니다.<span class="req-tag">필수</span></div>
+                </div>
+                <div class="checkbox-item" onclick="toggleCheck(this,'chk2')">
+                  <input type="checkbox" id="chk2">
+                  <div class="custom-check"><span class="check-mark">✓</span></div>
+                  <div class="checkbox-label">법인 기본 정관 전문을 읽고 이해하였음을 동의합니다.<span class="req-tag">필수</span></div>
+                </div>
+                <div class="checkbox-item" onclick="toggleCheck(this,'chk3')">
+                  <input type="checkbox" id="chk3">
+                  <div class="custom-check"><span class="check-mark">✓</span></div>
+                  <div class="checkbox-label">개인정보 수집 및 활용 동의서(안)에 동의합니다.<span class="req-tag">필수</span></div>
+                </div>
+                <div class="checkbox-item" onclick="toggleCheck(this,'chk4')">
+                  <input type="checkbox" id="chk4">
+                  <div class="custom-check"><span class="check-mark">✓</span></div>
+                  <div class="checkbox-label">위 내용은 사실임을 확인하며 마중물 장학회 설립 발기인 가입에 동의합니다.<span class="req-tag">필수</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="form-separator"></div>
+            <div class="form-group">
+              <div class="form-label">피드백 <span style="color:var(--text-hint);font-size:11px;font-weight:400;">선택</span></div>
+              <textarea class="form-input" id="f_feedback" placeholder="건의사항이나 문의사항을 자유롭게 남겨주세요" rows="3" style="resize:none;line-height:1.6;"></textarea>
+            </div>
+            <button class="submit-btn" id="submitBtn" onclick="submitForm()">전송</button>
+            <p style="text-align:center;font-size:11px;color:var(--text-hint);margin-top:10px;">제출된 정보는 법인 설립 목적으로만 활용됩니다</p>
+          </div>
+        </div>
+      </div>
+      <div class="success-screen" id="successScreen">
+        <div class="success-icon">✅</div>
+        <h3>가입 신청이 완료되었습니다!</h3>
+        <p>마중물 장학회 창립 발기인으로<br>신청해 주셔서 감사합니다.<br><br>법인 설립 진행상황은<br>등록하신 연락처로 안내드리겠습니다.</p>
+        <button class="back-btn" onclick="resetForm()">처음으로 돌아가기</button>
+      </div>
+    </div>
+
+  </div><!-- /scroll-area -->
+
+  <!-- TAB BAR -->
+  <div class="tab-bar">
+    <button class="tab-item active" id="tab-constitution" onclick="switchPage('constitution')">
+      <svg class="tab-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+      </svg>
+      <span class="tab-label">법인 기본 정관</span>
+    </button>
+    <button class="tab-item" id="tab-privacy" onclick="switchPage('privacy')">
+      <svg class="tab-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+      </svg>
+      <span class="tab-label">개인정보 수집 및<br>활용 동의</span>
+    </button>
+    <button class="tab-item" id="tab-join" onclick="switchPage('join')">
+      <svg class="tab-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/>
+      </svg>
+      <span class="tab-label">회원가입</span>
+    </button>
+  </div>
+
+</div><!-- /app -->
+
+<div class="toast" id="toast"></div>
 <div class="loading-overlay" id="loadingOverlay">
   <div class="loading-box">
     <div class="spinner"></div>
@@ -368,216 +499,6 @@
   </div>
 </div>
 
-<div class="toast" id="toast"></div>
-
-<div class="main">
-
-  <!-- ══════════ PAGE 1: 법인 기본 정관 ══════════ -->
-  <div class="page active" id="page-constitution">
-    <div class="logo-area">
-      <img class="logo-img" id="logoImg" src="icon.png" alt="마중물 장학회 로고"
-           onerror="this.style.display='none'; document.getElementById('logoFallback').style.display='flex';">
-      <div class="logo-img-fallback" id="logoFallback">🌱</div>
-      <h2>사단법인 마중물 장학회</h2>
-      <p>더불어 함께하는 세상을 향한<br>한국-베트남 장학 재단</p>
-    </div>
-    <div class="counter-strip">
-      <span>창립 발기인</span>
-      <strong id="counter-display">0</strong>
-      <span>/ 50명 모집 중</span>
-    </div>
-
-    <div class="card">
-      <div class="card-body">
-        <div class="card-title"><span class="icon">📋</span> 법인 기본 정관</div>
-        <div class="doc-text">
-          <div class="doc-chapter">[제1장 총칙]</div>
-          <div class="doc-article"><strong>제1조(명칭)</strong> 이 법인은 "재단법인 마중물 장학회"(이하 "본회"라 한다)라 한다.</div>
-          <div class="doc-article"><strong>제2조(목적)</strong> 본회는 경제적 어려움을 겪는 유능한 인재들에게 장학금을 지원하여 학업에 전념할 수 있도록 돕고, 사회 발전에 기여하는 인재를 육성함을 목적으로 한다.</div>
-          <div class="doc-article"><strong>제3조(사무소의 소재지)</strong> 본회의 사무소는 경기도 수원시에 둔다.</div>
-          <div class="doc-article"><strong>제4조(사업)</strong> 본회는 제2조의 목적을 달성하기 위하여 다음의 사업을 한다.<br>① 국내외 유학생 및 저소득 청소년에 대한 장학금 지급<br>② 장학생 선발 및 관리에 관한 사항<br>③ 학술·문화 교류 행사의 기획 및 운영<br>④ 한국-베트남 교육 협력 사업<br>⑤ 기타 본회의 목적달성에 필요한 사업</div>
-
-          <div class="doc-chapter">[제2장 회원]</div>
-          <div class="doc-article"><strong>제5조(회원의 종류)</strong> 본회의 회원은 다음 각 호와 같이 구분한다.<br>① 창립 발기인: 법인 설립에 동의하고 약정금을 납부하는 자<br>② 정회원: 본회의 목적에 동의하고 가입 절차를 완료한 자<br>③ 후원회원: 본회의 사업을 재정적으로 지원하는 자</div>
-          <div class="doc-article"><strong>제6조(입회)</strong> 본회에 가입하고자 하는 자는 소정의 가입 신청서를 제출하고 이사회의 승인을 얻어야 한다.</div>
-          <div class="doc-article"><strong>제7조(회원의 권리)</strong> 회원은 총회에 출석하여 의결권을 행사할 수 있다.</div>
-          <div class="doc-article"><strong>제8조(회원의 의무)</strong> 회원은 본 정관 및 총회·이사회의 의결 사항을 준수하고 소정의 회비를 납부하여야 한다.</div>
-
-          <div class="doc-chapter">[제3장 임원]</div>
-          <div class="doc-article"><strong>제9조(임원의 종류)</strong> 본회에 다음의 임원을 둔다.<br>① 이사장 1인<br>② 이사 5인 이상 15인 이하<br>③ 감사 2인</div>
-          <div class="doc-article"><strong>제10조(임원의 임기)</strong> 이사의 임기는 2년으로 하고, 감사의 임기는 2년으로 한다. 임원은 연임할 수 있다.</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="info-banner">
-      💡 법인 설립에는 발기인 50인 이상의 참여가 필요합니다. <strong>회원가입</strong> 탭에서 창립 발기인으로 참여해 주세요.
-    </div>
-  </div>
-
-  <!-- ══════════ PAGE 2: 개인정보 ══════════ -->
-  <div class="page" id="page-privacy">
-    <div class="section-header">
-      <h2>개인정보 수집 및 활용 동의서(안)</h2>
-    </div>
-
-    <div class="card">
-      <div class="card-body">
-        <div class="doc-text">
-          <div class="doc-article">(재)마중물 장학회는 법인 설립 및 발기인 관리를 위하여 아래와 같이 개인정보를 수집·이용하고자 합니다.</div>
-
-          <div class="doc-chapter">1. 수집하는 개인정보 항목</div>
-          <div class="doc-article">성명, 생년월일, 주소, 연락처(휴대전화), 약정 후원금액 및 납부 방식, 전자서명 데이터</div>
-
-          <div class="doc-chapter">2. 개인정보의 수집 및 이용 목적</div>
-          <div class="doc-article">• 비영리 법인(재단법인) 설립 허가 신청 및 발기인 명부 작성<br>• 장학회 창립총회 안내 및 법인 운영 관련 고지사항 전달<br>• 기부금 영수증 발급 및 후원금 관리(법인 설립 후)</div>
-
-          <div class="doc-chapter">3. 개인정보의 보유 및 이용 기간</div>
-          <div class="doc-article">개인정보 수집 및 이용 목적이 달성된 후에는 해당 정보를 지체 없이 파기합니다. 단, 관련 법령(사회복지법인 및 비영리법인 설립·운영에 관한 규칙 등)에 의하여 보존할 필요가 있는 경우 해당 기간 동안 보관합니다.</div>
-
-          <div class="doc-chapter">4. 동의의 거부 권리 및 불이익</div>
-          <div class="doc-article">귀하는 개인정보 수집 및 이용에 거부할 권리가 있습니다. 단, 동의를 거부하실 경우 법인 설립 발기인 등록이 불가능할 수 있음을 알려드립니다.</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ══════════ PAGE 3: 회원가입 ══════════ -->
-  <div class="page" id="page-join">
-    <div id="formView">
-      <div class="form-page-title">
-        <h2>창립 멤버 가입</h2>
-        <p>발기인 정보를 입력해 주세요</p>
-      </div>
-
-      <div class="card">
-        <div class="card-body">
-
-          <div class="form-group">
-            <div class="form-label">이름 <span class="required">필수입력</span></div>
-            <input type="text" class="form-input" id="f_name" placeholder="실명을 입력해 주세요" autocomplete="name">
-          </div>
-
-          <div class="form-group">
-            <div class="form-label">생년월일 (6자리) <span class="required">필수입력</span></div>
-            <input type="text" class="form-input" id="f_birth" placeholder="예) 850315" maxlength="6" inputmode="numeric">
-          </div>
-
-          <div class="form-group">
-            <div class="form-label">연락처 (-제외) <span class="required">필수입력</span></div>
-            <input type="tel" class="form-input" id="f_phone" placeholder="예) 01012345678" maxlength="11" inputmode="numeric">
-          </div>
-
-          <div class="form-group">
-            <div class="form-label">주소 <span class="required">필수입력</span></div>
-            <button class="address-search-btn" onclick="searchAddress()">
-              🔍 주소 검색 (카카오 우편번호)
-            </button>
-            <input type="text" class="form-input" id="f_addr1" placeholder="기본 주소" readonly
-              style="margin-bottom:7px; background:#f9f9f9; cursor:pointer;" onclick="searchAddress()">
-            <input type="text" class="form-input" id="f_addr2" placeholder="상세 주소 입력">
-          </div>
-
-          <div class="form-group">
-            <div class="form-label">약정금액 <span class="required">필수입력</span></div>
-            <div class="input-suffix">
-              <input type="number" class="form-input" id="f_amount" placeholder="0" inputmode="numeric" min="0">
-              <span class="suffix-text">만원</span>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <div class="form-label">납부방식</div>
-            <div class="payment-options">
-              <div class="payment-option">
-                <input type="radio" name="payment" id="pay_transfer" value="계좌이체">
-                <label for="pay_transfer"><span class="pay-icon">🏦</span>계좌이체</label>
-              </div>
-              <div class="payment-option">
-                <input type="radio" name="payment" id="pay_card" value="신용카드">
-                <label for="pay_card"><span class="pay-icon">💳</span>신용카드</label>
-              </div>
-              <div class="payment-option">
-                <input type="radio" name="payment" id="pay_cms" value="CMS">
-                <label for="pay_cms"><span class="pay-icon">🔄</span>CMS</label>
-              </div>
-            </div>
-          </div>
-
-          <div class="form-separator"></div>
-
-          <div class="form-group">
-            <div class="form-label" style="margin-bottom:10px;">필수 동의 항목</div>
-            <div class="checkbox-group">
-              <div class="checkbox-item" onclick="toggleCheck(this,'chk1')">
-                <input type="checkbox" id="chk1">
-                <div class="custom-check"><span class="check-mark">✓</span></div>
-                <div class="checkbox-label">마중물 장학회 법인 설립 취지서 전문을 읽고 이해하였음에 동의합니다.<span class="req-tag">필수</span></div>
-              </div>
-              <div class="checkbox-item" onclick="toggleCheck(this,'chk2')">
-                <input type="checkbox" id="chk2">
-                <div class="custom-check"><span class="check-mark">✓</span></div>
-                <div class="checkbox-label">법인 기본 정관 전문을 읽고 이해하였음을 동의합니다.<span class="req-tag">필수</span></div>
-              </div>
-              <div class="checkbox-item" onclick="toggleCheck(this,'chk3')">
-                <input type="checkbox" id="chk3">
-                <div class="custom-check"><span class="check-mark">✓</span></div>
-                <div class="checkbox-label">개인정보 수집 및 활용 동의서(안)에 동의합니다.<span class="req-tag">필수</span></div>
-              </div>
-              <div class="checkbox-item" onclick="toggleCheck(this,'chk4')">
-                <input type="checkbox" id="chk4">
-                <div class="custom-check"><span class="check-mark">✓</span></div>
-                <div class="checkbox-label">위 내용은 사실임을 확인하며 마중물 장학회 설립 발기인 가입에 동의합니다.<span class="req-tag">필수</span></div>
-              </div>
-            </div>
-          </div>
-
-          <div class="form-separator"></div>
-
-          <div class="form-group">
-            <div class="form-label">피드백 <span style="color:var(--text-hint);font-size:11px;font-weight:400;">선택</span></div>
-            <textarea class="form-input" id="f_feedback" placeholder="건의사항이나 문의사항을 자유롭게 남겨주세요" rows="3" style="resize:none;line-height:1.6;"></textarea>
-          </div>
-
-          <button class="submit-btn" id="submitBtn" onclick="submitForm()">전송</button>
-          <p style="text-align:center;font-size:11px;color:var(--text-hint);margin-top:10px;">제출된 정보는 법인 설립 목적으로만 활용됩니다</p>
-        </div>
-      </div>
-    </div>
-
-    <div class="success-screen" id="successScreen">
-      <div class="success-icon">✅</div>
-      <h3>가입 신청이 완료되었습니다!</h3>
-      <p>마중물 장학회 창립 발기인으로<br>신청해 주셔서 감사합니다.<br><br>법인 설립 진행상황은<br>등록하신 연락처로 안내드리겠습니다.</p>
-      <button class="back-btn" onclick="resetForm()">처음으로 돌아가기</button>
-    </div>
-  </div>
-
-</div>
-
-<!-- Bottom Tab Bar -->
-<div class="tab-bar">
-  <button class="tab-item active" id="tab-constitution" onclick="switchPage('constitution')">
-    <svg class="tab-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>
-    </svg>
-    <span class="tab-label">법인 기본 정관</span>
-  </button>
-  <button class="tab-item" id="tab-privacy" onclick="switchPage('privacy')">
-    <svg class="tab-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-    </svg>
-    <span class="tab-label">개인정보 수집 및<br>활용 동의</span>
-  </button>
-  <button class="tab-item" id="tab-join" onclick="switchPage('join')">
-    <svg class="tab-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/>
-    </svg>
-    <span class="tab-label">회원가입</span>
-  </button>
-</div>
-
-<!-- Firebase -->
 <script type="module">
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
   import { getFirestore, collection, addDoc, getCountFromServer, serverTimestamp }
@@ -610,110 +531,99 @@
 </script>
 
 <script>
-  function switchPage(name) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
-    document.getElementById('page-' + name).classList.add('active');
-    document.getElementById('tab-' + name).classList.add('active');
-    window.scrollTo(0, 0);
-    const titles = { constitution:'법인 기본 정관', privacy:'개인정보 수집 및 활용 동의', join:'회원가입' };
-    document.getElementById('topbar-title').textContent = titles[name];
-  }
-
-  function toggleCheck(el, id) {
-    el.classList.toggle('checked');
-    document.getElementById(id).checked = el.classList.contains('checked');
-  }
-
-  function searchAddress() {
-    new daum.Postcode({
-      oncomplete: function(data) {
-        document.getElementById('f_addr1').value = data.roadAddress || data.jibunAddress;
-        document.getElementById('f_addr2').focus();
-      }
-    }).open();
-  }
-
-  function showToast(msg) {
-    const t = document.getElementById('toast');
-    t.textContent = msg; t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 2800);
-  }
-
-  function validate() {
-    const v = id => document.getElementById(id).value.trim();
-    if (!v('f_name')) { showToast('이름을 입력해 주세요'); return false; }
-    if (!/^\d{6}$/.test(v('f_birth'))) { showToast('생년월일 6자리를 입력해 주세요'); return false; }
-    if (!/^\d{10,11}$/.test(v('f_phone'))) { showToast('연락처를 올바르게 입력해 주세요'); return false; }
-    if (!v('f_addr1')) { showToast('주소를 검색해 주세요'); return false; }
-    if (!v('f_amount') || Number(v('f_amount')) <= 0) { showToast('약정금액을 입력해 주세요'); return false; }
-    const labels = ['설립취지 동의','정관확인 동의','개인정보 활용 동의','사실확인 가입 동의'];
-    for (let i = 1; i <= 4; i++) {
-      if (!document.getElementById('chk'+i).checked) { showToast(labels[i-1]+'에 체크해 주세요'); return false; }
+function switchPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  document.getElementById('tab-' + name).classList.add('active');
+  document.getElementById('scrollArea').scrollTop = 0;
+  const titles = { constitution:'법인 기본 정관', privacy:'개인정보 수집 및 활용 동의', join:'회원가입' };
+  document.getElementById('topbar-title').textContent = titles[name];
+}
+function toggleCheck(el, id) {
+  el.classList.toggle('checked');
+  document.getElementById(id).checked = el.classList.contains('checked');
+}
+function searchAddress() {
+  new daum.Postcode({
+    oncomplete: function(data) {
+      document.getElementById('f_addr1').value = data.roadAddress || data.jibunAddress;
+      document.getElementById('f_addr2').focus();
     }
-    return true;
+  }).open();
+}
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+function validate() {
+  const v = id => document.getElementById(id).value.trim();
+  if (!v('f_name')) { showToast('이름을 입력해 주세요'); return false; }
+  if (!/^\d{6}$/.test(v('f_birth'))) { showToast('생년월일 6자리를 입력해 주세요'); return false; }
+  if (!/^\d{10,11}$/.test(v('f_phone'))) { showToast('연락처를 올바르게 입력해 주세요'); return false; }
+  if (!v('f_addr1')) { showToast('주소를 검색해 주세요'); return false; }
+  if (!v('f_amount') || Number(v('f_amount')) <= 0) { showToast('약정금액을 입력해 주세요'); return false; }
+  const labels = ['설립취지 동의','정관확인 동의','개인정보 활용 동의','사실확인 가입 동의'];
+  for (let i = 1; i <= 4; i++) {
+    if (!document.getElementById('chk'+i).checked) { showToast(labels[i-1]+'에 체크해 주세요'); return false; }
   }
-
-  async function submitForm() {
-    if (!validate()) return;
-    const payR = document.querySelector('input[name="payment"]:checked');
-    const data = {
-      name: document.getElementById('f_name').value.trim(),
-      birth: document.getElementById('f_birth').value.trim(),
-      phone: document.getElementById('f_phone').value.trim(),
-      address: document.getElementById('f_addr1').value.trim() + ' ' + document.getElementById('f_addr2').value.trim(),
-      amount: Number(document.getElementById('f_amount').value),
-      paymentMethod: payR ? payR.value : '미선택',
-      agreed_founding: true, agreed_constitution: true,
-      agreed_privacy: true, agreed_factcheck: true,
-      feedback: document.getElementById('f_feedback').value.trim()
-    };
-
-    document.getElementById('loadingOverlay').classList.add('show');
-    document.getElementById('submitBtn').disabled = true;
-
-    try {
-      if (typeof window._submitToFirebase === 'function') {
-        await window._submitToFirebase(data);
-      } else {
-        const ex = JSON.parse(localStorage.getItem('mazungmul') || '[]');
-        ex.push({ ...data, createdAt: new Date().toISOString() });
-        localStorage.setItem('mazungmul', JSON.stringify(ex));
-        await new Promise(r => setTimeout(r, 700));
-      }
-      document.getElementById('loadingOverlay').classList.remove('show');
-      document.getElementById('formView').style.display = 'none';
-      document.getElementById('successScreen').style.display = 'block';
-      const el = document.getElementById('counter-display');
-      el.textContent = String(Number(el.textContent) + 1);
-    } catch(err) {
-      document.getElementById('loadingOverlay').classList.remove('show');
-      document.getElementById('submitBtn').disabled = false;
-      showToast('오류가 발생했습니다. 다시 시도해 주세요.');
-      console.error(err);
+  return true;
+}
+async function submitForm() {
+  if (!validate()) return;
+  const payR = document.querySelector('input[name="payment"]:checked');
+  const data = {
+    name: document.getElementById('f_name').value.trim(),
+    birth: document.getElementById('f_birth').value.trim(),
+    phone: document.getElementById('f_phone').value.trim(),
+    address: document.getElementById('f_addr1').value.trim() + ' ' + document.getElementById('f_addr2').value.trim(),
+    amount: Number(document.getElementById('f_amount').value),
+    paymentMethod: payR ? payR.value : '미선택',
+    agreed_founding: true, agreed_constitution: true, agreed_privacy: true, agreed_factcheck: true,
+    feedback: document.getElementById('f_feedback').value.trim()
+  };
+  document.getElementById('loadingOverlay').classList.add('show');
+  document.getElementById('submitBtn').disabled = true;
+  try {
+    if (typeof window._submitToFirebase === 'function') {
+      await window._submitToFirebase(data);
+    } else {
+      const ex = JSON.parse(localStorage.getItem('mazungmul') || '[]');
+      ex.push({ ...data, createdAt: new Date().toISOString() });
+      localStorage.setItem('mazungmul', JSON.stringify(ex));
+      await new Promise(r => setTimeout(r, 700));
     }
-  }
-
-  function resetForm() {
-    ['f_name','f_birth','f_phone','f_addr1','f_addr2','f_feedback'].forEach(id => document.getElementById(id).value = '');
-    document.getElementById('f_amount').value = '';
-    document.querySelectorAll('input[name="payment"]').forEach(r => r.checked = false);
-    document.querySelectorAll('.checkbox-item').forEach(el => el.classList.remove('checked'));
-    document.querySelectorAll('.checkbox-item input[type="checkbox"]').forEach(cb => cb.checked = false);
+    document.getElementById('loadingOverlay').classList.remove('show');
+    document.getElementById('formView').style.display = 'none';
+    document.getElementById('successScreen').style.display = 'block';
+    const el = document.getElementById('counter-display');
+    el.textContent = String(Number(el.textContent) + 1);
+  } catch(err) {
+    document.getElementById('loadingOverlay').classList.remove('show');
     document.getElementById('submitBtn').disabled = false;
-    document.getElementById('formView').style.display = 'block';
-    document.getElementById('successScreen').style.display = 'none';
-    switchPage('constitution');
+    showToast('오류가 발생했습니다. 다시 시도해 주세요.');
+    console.error(err);
   }
-
-  function toggleMenu() { showToast('메뉴 기능은 추후 업데이트 예정입니다'); }
-
-  window.switchPage = switchPage;
-  window.toggleCheck = toggleCheck;
-  window.searchAddress = searchAddress;
-  window.submitForm = submitForm;
-  window.resetForm = resetForm;
-  window.toggleMenu = toggleMenu;
+}
+function resetForm() {
+  ['f_name','f_birth','f_phone','f_addr1','f_addr2','f_feedback'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('f_amount').value = '';
+  document.querySelectorAll('input[name="payment"]').forEach(r => r.checked = false);
+  document.querySelectorAll('.checkbox-item').forEach(el => el.classList.remove('checked'));
+  document.querySelectorAll('.checkbox-item input[type="checkbox"]').forEach(cb => cb.checked = false);
+  document.getElementById('submitBtn').disabled = false;
+  document.getElementById('formView').style.display = 'block';
+  document.getElementById('successScreen').style.display = 'none';
+  switchPage('constitution');
+}
+function toggleMenu() { showToast('메뉴 기능은 추후 업데이트 예정입니다'); }
+window.switchPage = switchPage;
+window.toggleCheck = toggleCheck;
+window.searchAddress = searchAddress;
+window.submitForm = submitForm;
+window.resetForm = resetForm;
+window.toggleMenu = toggleMenu;
 </script>
 </body>
 </html>
