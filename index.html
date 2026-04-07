@@ -536,12 +536,16 @@ body {
       <!-- 로그인 -->
       <div class="admin-login" id="adminLogin">
         <h2>🔐 관리자 로그인</h2>
-        <p class="admin-login-info">sixvalue@gmail.com 계정으로 로그인하세요</p>
+        <p class="admin-login-info"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4f3c2637392e233a2a0f28222e2623612c2022">[email&#160;protected]</a> 계정으로 로그인하세요</p>
         <input type="email" class="form-input" id="adminEmail" value="sixvalue@gmail.com" style="max-width:300px;">
         <input type="password" class="form-input" id="adminPw" placeholder="비밀번호 입력"
                style="max-width:300px;" onkeydown="if(event.key==='Enter')adminLogin()">
         <p class="admin-login-err" id="adminErr">이메일 또는 비밀번호가 올바르지 않습니다</p>
         <button class="admin-login-btn" onclick="adminLogin()">로그인</button>
+        <button onclick="switchPage('constitution')"
+          style="background:none;border:none;color:var(--text-hint);font-size:13px;cursor:pointer;font-family:inherit;margin-top:4px;">
+          ← 돌아가기
+        </button>
       </div>
 
       <!-- 패널 -->
@@ -641,7 +645,7 @@ body {
 </div>
 
 <!-- Firebase -->
-<script type="module">
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module">
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
   import {
     getFirestore, collection, addDoc, getDocs, doc,
@@ -757,7 +761,6 @@ function switchPage(name) {
 
 function goAdmin() {
   switchPage('admin');
-  document.getElementById('mainTabBar').style.display = 'none';
 }
 
 // ── ADMIN LOGIN ──
@@ -784,7 +787,6 @@ async function adminLogout() {
   document.getElementById('adminPanel').style.display = 'none';
   document.getElementById('adminPw').value = '';
   document.getElementById('adminErr').style.display = 'none';
-  document.getElementById('mainTabBar').style.display = 'flex';
   switchPage('constitution');
 }
 
@@ -1084,12 +1086,3 @@ window.adminLogin = adminLogin;
 window.adminLogout = adminLogout;
 window.loadAdminData = loadAdminData;
 window.startEdit = startEdit;
-window.saveEdit = saveEdit;
-window.cancelEdit = cancelEdit;
-window.confirmDelete = confirmDelete;
-window.closeConfirm = closeConfirm;
-window.downloadCSV = downloadCSV;
-window.generatePDF = generatePDF;
-</script>
-</body>
-</html>
