@@ -10,308 +10,161 @@
 <title>마중물 장학회 법인설립 창립멤버 가입</title>
 <link rel="manifest" href="manifest.json">
 <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&family=Noto+Serif+KR:wght@400;600&display=swap" rel="stylesheet">
 <style>
 :root {
-  --primary: #1a4f3a;
-  --primary-light: #2d7a58;
-  --primary-pale: #e8f5ee;
-  --accent: #c9a84c;
-  --accent-light: #f5e9c8;
-  --text-main: #1a1a1a;
-  --text-sub: #444;
-  --text-hint: #999;
-  --border: #ddd;
-  --border-focus: #2d7a58;
-  --bg: #f5f5f5;
-  --bg-card: #fff;
-  --danger: #c0392b;
-  --danger-bg: #fdecea;
-  --shadow: 0 1px 6px rgba(0,0,0,0.08);
-  --radius: 10px;
-  --topbar-h: 50px;
-  --tab-h: 60px;
+  --primary:#1a4f3a;--primary-light:#2d7a58;--primary-pale:#e8f5ee;
+  --accent:#c9a84c;--accent-light:#f5e9c8;
+  --text-main:#1a1a1a;--text-sub:#444;--text-hint:#999;
+  --border:#ddd;--border-focus:#2d7a58;
+  --bg:#f5f5f5;--bg-card:#fff;
+  --danger:#c0392b;--danger-bg:#fdecea;
+  --shadow:0 1px 6px rgba(0,0,0,0.08);--radius:10px;
+  --topbar-h:50px;--tab-h:60px;
 }
-* { box-sizing: border-box; margin: 0; padding: 0; }
-html { height: 100%; }
-body {
-  height: 100%;
-  font-family: 'Noto Sans KR', sans-serif;
-  background: #222;
-  color: var(--text-main);
-  -webkit-font-smoothing: antialiased;
-  display: flex;
-  justify-content: center;
-}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{height:100%;}
+body{height:100%;font-family:'Noto Sans KR',sans-serif;background:#222;color:var(--text-main);-webkit-font-smoothing:antialiased;display:flex;justify-content:center;}
+#app{width:100%;max-width:430px;height:100vh;display:flex;flex-direction:column;background:var(--bg);box-shadow:0 0 60px rgba(0,0,0,0.5);}
+.topbar{flex-shrink:0;height:var(--topbar-h);background:#1c1c1c;display:flex;align-items:center;justify-content:center;padding:0 48px;position:relative;}
+.topbar h1{font-size:15px;font-weight:500;color:#fff;letter-spacing:-0.2px;}
+.topbar-menu{position:absolute;left:14px;background:none;border:none;cursor:pointer;color:#fff;padding:8px;display:flex;flex-direction:column;gap:5px;}
+.topbar-menu span{display:block;width:22px;height:1.5px;background:#fff;border-radius:2px;}
+.topbar-admin{position:absolute;right:14px;background:none;border:none;cursor:pointer;color:rgba(255,255,255,0.45);font-size:19px;padding:8px;line-height:1;}
+.scroll-area{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+.tab-bar{flex-shrink:0;height:var(--tab-h);background:#fff;border-top:1px solid #e0e0e0;display:flex;box-shadow:0 -2px 10px rgba(0,0,0,0.07);}
+.tab-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;border:none;background:none;padding:0;color:#aaa;font-family:inherit;transition:color 0.18s;-webkit-tap-highlight-color:transparent;border-top:2.5px solid transparent;}
+.tab-item.active{color:var(--primary);border-top-color:var(--primary);}
+.tab-icon-svg{width:22px;height:22px;}
+.tab-label{font-size:10px;font-weight:500;letter-spacing:-0.3px;text-align:center;line-height:1.3;}
+.page{display:none;}.page.active{display:block;}
 
-/* ── 앱 컨테이너: 모바일엔 100%, 데스크탑엔 430px 중앙 ── */
-#app {
-  width: 100%;
-  max-width: 430px;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background: var(--bg);
-  box-shadow: 0 0 60px rgba(0,0,0,0.5);
-}
+.logo-area{background:var(--primary);padding:28px 20px 22px;text-align:center;color:#fff;}
+.logo-img{width:90px;height:90px;border-radius:50%;object-fit:cover;display:block;margin:0 auto 14px;background:#fff;box-shadow:0 3px 14px rgba(0,0,0,0.25);}
+.logo-fallback{width:90px;height:90px;border-radius:50%;background:#fff;display:none;align-items:center;justify-content:center;font-size:46px;margin:0 auto 14px;box-shadow:0 3px 14px rgba(0,0,0,0.25);}
+.logo-area h2{font-family:'Noto Serif KR',serif;font-size:18px;font-weight:600;margin-bottom:5px;}
+.logo-area p{font-size:12px;opacity:0.82;line-height:1.5;}
+.counter-strip{background:var(--accent);color:#fff;padding:9px 20px;font-size:13px;font-weight:500;display:flex;align-items:center;justify-content:center;gap:6px;}
+.counter-strip strong{font-size:17px;}
+.section-header{background:var(--primary);color:#fff;padding:22px 20px 16px;text-align:center;}
+.section-header h2{font-family:'Noto Serif KR',serif;font-size:18px;font-weight:600;}
+.card{background:var(--bg-card);border-radius:var(--radius);box-shadow:var(--shadow);margin:12px 14px;}
+.card-body{padding:16px 18px;}
+.card-title{font-size:14px;font-weight:700;color:var(--primary);margin-bottom:12px;display:flex;align-items:center;gap:7px;padding-bottom:10px;border-bottom:1px solid #eee;}
+.doc-text{font-size:13.5px;line-height:1.65;color:var(--text-sub);}
+.doc-chapter{font-size:14px;font-weight:700;color:var(--primary);margin:12px 0 5px;}
+.doc-chapter:first-child{margin-top:0;}
+.doc-article{margin-bottom:5px;}
+.doc-article strong{color:var(--text-main);font-weight:600;}
+.info-banner{background:var(--accent-light);border-left:3px solid var(--accent);padding:10px 14px;border-radius:0 8px 8px 0;font-size:12.5px;color:#5a4200;line-height:1.55;margin:0 14px 12px;}
 
-/* ── TOPBAR (flex 아이템, sticky 불필요) ── */
-.topbar {
-  flex-shrink: 0;
-  height: var(--topbar-h);
-  background: #1c1c1c;
-  display: flex; align-items: center; justify-content: center;
-  padding: 0 48px;
-  position: relative;
-}
-.topbar h1 { font-size: 15px; font-weight: 500; color: #fff; letter-spacing: -0.2px; }
-.topbar-menu {
-  position: absolute; left: 14px;
-  background: none; border: none; cursor: pointer;
-  color: #fff; padding: 8px;
-  display: flex; flex-direction: column; gap: 5px;
-}
-.topbar-menu span { display: block; width: 22px; height: 1.5px; background: #fff; border-radius: 2px; }
+.form-page-title{text-align:center;padding:20px 20px 4px;}
+.form-page-title h2{font-family:'Noto Serif KR',serif;font-size:18px;font-weight:600;color:var(--primary);}
+.form-page-title p{font-size:12px;color:var(--text-hint);margin-top:4px;}
+.form-group{margin-bottom:15px;}
+.form-label{display:flex;align-items:center;justify-content:space-between;font-size:12.5px;font-weight:500;color:var(--text-sub);margin-bottom:6px;}
+.form-label .required{color:var(--danger);font-size:11px;font-weight:400;}
+.form-input{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:11px 13px;font-size:14px;font-family:'Noto Sans KR',sans-serif;color:var(--text-main);background:#fff;transition:border-color 0.2s;outline:none;-webkit-appearance:none;appearance:none;}
+.form-input:focus{border-color:var(--border-focus);}
+.form-input::placeholder{color:var(--text-hint);}
+.input-suffix{position:relative;}
+.input-suffix .form-input{padding-right:48px;}
+.input-suffix .suffix-text{position:absolute;right:13px;top:50%;transform:translateY(-50%);font-size:13px;color:var(--text-hint);pointer-events:none;}
+.address-search-btn{width:100%;background:var(--primary-pale);border:1.5px solid var(--primary-light);color:var(--primary);border-radius:8px;padding:10px 13px;font-size:13px;font-weight:500;font-family:'Noto Sans KR',sans-serif;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;margin-bottom:7px;transition:background 0.2s;}
+.address-search-btn:active{background:#c0deca;}
+.payment-options{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+.payment-option{position:relative;}
+.payment-option input[type="radio"]{position:absolute;opacity:0;width:0;height:0;}
+.payment-option label{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:12px 6px;border:1.5px solid var(--border);border-radius:10px;cursor:pointer;font-size:12px;font-weight:500;color:var(--text-sub);text-align:center;line-height:1.4;transition:all 0.18s;min-height:66px;background:#fff;}
+.payment-option label .pay-icon{font-size:20px;margin-bottom:5px;}
+.payment-option input[type="radio"]:checked+label{border-color:var(--primary);background:var(--primary-pale);color:var(--primary);}
+.form-separator{height:1px;background:#eee;margin:16px 0;}
+.checkbox-group{display:flex;flex-direction:column;gap:8px;}
+.checkbox-item{display:flex;align-items:flex-start;gap:10px;padding:12px 13px;border:1.5px solid var(--border);border-radius:10px;background:#fff;cursor:pointer;transition:all 0.18s;}
+.checkbox-item.checked{border-color:var(--primary);background:var(--primary-pale);}
+.checkbox-item input[type="checkbox"]{display:none;}
+.custom-check{width:20px;height:20px;flex-shrink:0;border:2px solid var(--border);border-radius:5px;background:#fff;display:flex;align-items:center;justify-content:center;transition:all 0.18s;margin-top:1px;}
+.checkbox-item.checked .custom-check{background:var(--primary);border-color:var(--primary);}
+.check-mark{display:none;color:#fff;font-size:12px;}
+.checkbox-item.checked .check-mark{display:block;}
+.checkbox-label{font-size:12.5px;line-height:1.55;color:var(--text-sub);}
+.checkbox-item.checked .checkbox-label{color:var(--primary);}
+.checkbox-label .req-tag{display:inline-block;background:var(--danger-bg);color:var(--danger);font-size:10px;padding:1px 5px;border-radius:4px;margin-left:3px;vertical-align:middle;}
+.submit-btn{width:100%;background:var(--primary);color:#fff;border:none;border-radius:10px;padding:15px;font-size:15px;font-weight:700;font-family:'Noto Sans KR',sans-serif;cursor:pointer;transition:background 0.2s,transform 0.1s;margin-top:6px;}
+.submit-btn:active{transform:scale(0.98);background:#0d3327;}
+.submit-btn:disabled{background:#bbb;cursor:not-allowed;}
+.success-screen{display:none;text-align:center;padding:48px 24px;}
+.success-icon{width:76px;height:76px;border-radius:50%;background:var(--primary-pale);display:flex;align-items:center;justify-content:center;font-size:38px;margin:0 auto 18px;}
+.success-screen h3{font-size:20px;font-weight:700;color:var(--primary);margin-bottom:10px;}
+.success-screen p{font-size:13.5px;color:var(--text-sub);line-height:1.7;}
+.back-btn{margin-top:22px;display:inline-block;padding:11px 26px;background:var(--primary);color:#fff;border-radius:8px;font-size:13.5px;font-weight:500;cursor:pointer;border:none;font-family:inherit;}
 
-/* ── SCROLL AREA (grows to fill, scrolls internally) ── */
-.scroll-area {
-  flex: 1;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-}
+/* 관리자 로그인 */
+.admin-login-overlay{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,0.65);align-items:center;justify-content:center;}
+.admin-login-overlay.show{display:flex;}
+.admin-login-box{background:#fff;border-radius:18px;padding:32px 28px;width:300px;text-align:center;}
+.admin-login-box h3{font-size:17px;font-weight:700;color:var(--primary);margin-bottom:6px;}
+.admin-login-box p{font-size:12px;color:var(--text-hint);margin-bottom:18px;}
+.admin-login-box input{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:12px 14px;font-size:16px;font-family:inherit;outline:none;margin-bottom:10px;text-align:center;letter-spacing:4px;}
+.admin-login-box input:focus{border-color:var(--border-focus);}
+.admin-login-error{color:var(--danger);font-size:12px;margin-bottom:10px;display:none;}
+.admin-login-btns{display:flex;gap:8px;}
+.admin-login-btns button{flex:1;padding:12px;border-radius:8px;border:none;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;}
+.btn-cancel{background:#f0f0f0;color:var(--text-sub);}
+.btn-enter{background:var(--primary);color:#fff;}
 
-/* ── TAB BAR (flex 아이템, 항상 하단 고정) ── */
-.tab-bar {
-  flex-shrink: 0;
-  height: var(--tab-h);
-  background: #fff;
-  border-top: 1px solid #e0e0e0;
-  display: flex;
-  box-shadow: 0 -2px 10px rgba(0,0,0,0.07);
-}
-.tab-item {
-  flex: 1; display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  gap: 3px; cursor: pointer;
-  border: none; background: none; padding: 0;
-  color: #aaa; font-family: inherit;
-  transition: color 0.18s;
-  -webkit-tap-highlight-color: transparent;
-  border-top: 2.5px solid transparent;
-}
-.tab-item.active { color: var(--primary); border-top-color: var(--primary); }
-.tab-icon-svg { width: 22px; height: 22px; }
-.tab-label { font-size: 10px; font-weight: 500; letter-spacing: -0.3px; text-align: center; line-height: 1.3; }
+/* 관리자 페이지 */
+#page-admin{padding-bottom:20px;}
+.admin-header{background:#1c1c1c;color:#fff;padding:18px 16px 14px;}
+.admin-header h2{font-size:16px;font-weight:600;margin-bottom:3px;}
+.admin-header p{font-size:12px;opacity:0.55;}
+.admin-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;padding:12px 14px 0;}
+.stat-card{background:#fff;border-radius:10px;padding:12px 8px;text-align:center;box-shadow:var(--shadow);}
+.stat-card .stat-num{font-size:22px;font-weight:700;color:var(--primary);}
+.stat-card .stat-label{font-size:10px;color:var(--text-hint);margin-top:2px;}
+.admin-actions{display:flex;gap:8px;padding:12px 14px 0;}
+.admin-btn{flex:1;padding:11px 6px;border-radius:8px;border:none;font-size:12px;font-weight:600;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:4px;transition:opacity 0.2s;}
+.admin-btn:active{opacity:0.75;}
+.btn-csv{background:#2d7a58;color:#fff;}
+.btn-pdf{background:#c0392b;color:#fff;}
+.btn-refresh{background:#f0f0f0;color:var(--text-sub);}
+.admin-table-wrap{margin:12px 14px 0;overflow-x:auto;border-radius:10px;box-shadow:var(--shadow);}
+.admin-table{width:100%;border-collapse:collapse;background:#fff;font-size:12px;min-width:580px;}
+.admin-table thead{background:var(--primary);color:#fff;}
+.admin-table th{padding:10px 8px;text-align:left;font-weight:500;white-space:nowrap;}
+.admin-table td{padding:9px 8px;border-bottom:1px solid #f0f0f0;color:var(--text-sub);white-space:nowrap;}
+.admin-table tbody tr:hover{background:var(--primary-pale);}
+.admin-table tbody tr:last-child td{border-bottom:none;}
+.badge-pay{display:inline-block;padding:2px 7px;border-radius:10px;font-size:10px;font-weight:500;}
+.badge-계좌이체{background:#e3f2fd;color:#1565c0;}
+.badge-신용카드{background:#fce4ec;color:#c62828;}
+.badge-CMS{background:#f3e5f5;color:#6a1b9a;}
+.badge-미선택{background:#f5f5f5;color:#888;}
+.admin-empty{text-align:center;padding:40px 20px;color:var(--text-hint);font-size:13px;}
+.admin-logout-btn{display:block;width:calc(100% - 28px);margin:14px 14px 0;padding:12px;border-radius:8px;border:1.5px solid var(--border);background:#fff;color:var(--text-sub);font-size:13px;font-weight:500;font-family:inherit;cursor:pointer;text-align:center;}
 
-/* ── PAGES ── */
-.page { display: none; }
-.page.active { display: block; }
-
-/* ── LOGO ── */
-.logo-area {
-  background: var(--primary);
-  padding: 28px 20px 22px;
-  text-align: center; color: #fff;
-}
-.logo-img {
-  width: 90px; height: 90px; border-radius: 50%;
-  object-fit: cover; display: block; margin: 0 auto 14px;
-  background: #fff; box-shadow: 0 3px 14px rgba(0,0,0,0.25);
-}
-.logo-fallback {
-  width: 90px; height: 90px; border-radius: 50%;
-  background: #fff; display: none; align-items: center; justify-content: center;
-  font-size: 46px; margin: 0 auto 14px;
-  box-shadow: 0 3px 14px rgba(0,0,0,0.25);
-}
-.logo-area h2 { font-family: 'Noto Serif KR', serif; font-size: 18px; font-weight: 600; margin-bottom: 5px; }
-.logo-area p { font-size: 12px; opacity: 0.82; line-height: 1.5; }
-
-.counter-strip {
-  background: var(--accent); color: #fff;
-  padding: 9px 20px; font-size: 13px; font-weight: 500;
-  display: flex; align-items: center; justify-content: center; gap: 6px;
-}
-.counter-strip strong { font-size: 17px; }
-
-/* ── SECTION HEADER ── */
-.section-header {
-  background: var(--primary); color: #fff;
-  padding: 22px 20px 16px; text-align: center;
-}
-.section-header h2 { font-family: 'Noto Serif KR', serif; font-size: 18px; font-weight: 600; }
-
-/* ── CARD ── */
-.card {
-  background: var(--bg-card); border-radius: var(--radius);
-  box-shadow: var(--shadow); margin: 12px 14px;
-}
-.card-body { padding: 16px 18px; }
-.card-title {
-  font-size: 14px; font-weight: 700; color: var(--primary);
-  margin-bottom: 12px; display: flex; align-items: center; gap: 7px;
-  padding-bottom: 10px; border-bottom: 1px solid #eee;
-}
-
-/* ── DOC TEXT ── */
-.doc-text { font-size: 13.5px; line-height: 1.65; color: var(--text-sub); }
-.doc-chapter { font-size: 14px; font-weight: 700; color: var(--primary); margin: 12px 0 5px; }
-.doc-chapter:first-child { margin-top: 0; }
-.doc-article { margin-bottom: 5px; }
-.doc-article strong { color: var(--text-main); font-weight: 600; }
-
-/* ── INFO BANNER ── */
-.info-banner {
-  background: var(--accent-light); border-left: 3px solid var(--accent);
-  padding: 10px 14px; border-radius: 0 8px 8px 0;
-  font-size: 12.5px; color: #5a4200; line-height: 1.55;
-  margin: 0 14px 12px;
-}
-
-/* ── FORM ── */
-.form-page-title { text-align: center; padding: 20px 20px 4px; }
-.form-page-title h2 { font-family: 'Noto Serif KR', serif; font-size: 18px; font-weight: 600; color: var(--primary); }
-.form-page-title p { font-size: 12px; color: var(--text-hint); margin-top: 4px; }
-
-.form-group { margin-bottom: 15px; }
-.form-label {
-  display: flex; align-items: center; justify-content: space-between;
-  font-size: 12.5px; font-weight: 500; color: var(--text-sub); margin-bottom: 6px;
-}
-.form-label .required { color: var(--danger); font-size: 11px; font-weight: 400; }
-
-.form-input {
-  width: 100%; border: 1.5px solid var(--border); border-radius: 8px;
-  padding: 11px 13px; font-size: 14px; font-family: 'Noto Sans KR', sans-serif;
-  color: var(--text-main); background: #fff;
-  transition: border-color 0.2s; outline: none;
-  -webkit-appearance: none; appearance: none;
-}
-.form-input:focus { border-color: var(--border-focus); }
-.form-input::placeholder { color: var(--text-hint); }
-
-.input-suffix { position: relative; }
-.input-suffix .form-input { padding-right: 48px; }
-.input-suffix .suffix-text {
-  position: absolute; right: 13px; top: 50%; transform: translateY(-50%);
-  font-size: 13px; color: var(--text-hint); pointer-events: none;
-}
-
-.address-search-btn {
-  width: 100%; background: var(--primary-pale);
-  border: 1.5px solid var(--primary-light); color: var(--primary);
-  border-radius: 8px; padding: 10px 13px;
-  font-size: 13px; font-weight: 500; font-family: 'Noto Sans KR', sans-serif;
-  cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 7px;
-  margin-bottom: 7px; transition: background 0.2s;
-}
-.address-search-btn:active { background: #c0deca; }
-
-.payment-options { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-.payment-option { position: relative; }
-.payment-option input[type="radio"] { position: absolute; opacity: 0; width: 0; height: 0; }
-.payment-option label {
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  padding: 12px 6px; border: 1.5px solid var(--border); border-radius: 10px;
-  cursor: pointer; font-size: 12px; font-weight: 500;
-  color: var(--text-sub); text-align: center; line-height: 1.4;
-  transition: all 0.18s; min-height: 66px; background: #fff;
-}
-.payment-option label .pay-icon { font-size: 20px; margin-bottom: 5px; }
-.payment-option input[type="radio"]:checked + label {
-  border-color: var(--primary); background: var(--primary-pale); color: var(--primary);
-}
-
-.form-separator { height: 1px; background: #eee; margin: 16px 0; }
-
-.checkbox-group { display: flex; flex-direction: column; gap: 8px; }
-.checkbox-item {
-  display: flex; align-items: flex-start; gap: 10px;
-  padding: 12px 13px; border: 1.5px solid var(--border);
-  border-radius: 10px; background: #fff; cursor: pointer; transition: all 0.18s;
-}
-.checkbox-item.checked { border-color: var(--primary); background: var(--primary-pale); }
-.checkbox-item input[type="checkbox"] { display: none; }
-.custom-check {
-  width: 20px; height: 20px; flex-shrink: 0;
-  border: 2px solid var(--border); border-radius: 5px; background: #fff;
-  display: flex; align-items: center; justify-content: center;
-  transition: all 0.18s; margin-top: 1px;
-}
-.checkbox-item.checked .custom-check { background: var(--primary); border-color: var(--primary); }
-.check-mark { display: none; color: #fff; font-size: 12px; }
-.checkbox-item.checked .check-mark { display: block; }
-.checkbox-label { font-size: 12.5px; line-height: 1.55; color: var(--text-sub); }
-.checkbox-item.checked .checkbox-label { color: var(--primary); }
-.checkbox-label .req-tag {
-  display: inline-block; background: var(--danger-bg); color: var(--danger);
-  font-size: 10px; padding: 1px 5px; border-radius: 4px; margin-left: 3px; vertical-align: middle;
-}
-
-.submit-btn {
-  width: 100%; background: var(--primary); color: #fff;
-  border: none; border-radius: 10px; padding: 15px;
-  font-size: 15px; font-weight: 700; font-family: 'Noto Sans KR', sans-serif;
-  cursor: pointer; transition: background 0.2s, transform 0.1s; margin-top: 6px;
-}
-.submit-btn:active { transform: scale(0.98); background: #0d3327; }
-.submit-btn:disabled { background: #bbb; cursor: not-allowed; }
-
-.success-screen { display: none; text-align: center; padding: 48px 24px; }
-.success-icon {
-  width: 76px; height: 76px; border-radius: 50%; background: var(--primary-pale);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 38px; margin: 0 auto 18px;
-}
-.success-screen h3 { font-size: 20px; font-weight: 700; color: var(--primary); margin-bottom: 10px; }
-.success-screen p { font-size: 13.5px; color: var(--text-sub); line-height: 1.7; }
-.back-btn {
-  margin-top: 22px; display: inline-block; padding: 11px 26px;
-  background: var(--primary); color: #fff; border-radius: 8px;
-  font-size: 13.5px; font-weight: 500; cursor: pointer; border: none; font-family: inherit;
-}
-
-/* ── TOAST ── */
-.toast {
-  position: fixed; bottom: 80px; left: 50%;
-  transform: translateX(-50%) translateY(10px);
-  background: rgba(0,0,0,0.78); color: #fff;
-  padding: 9px 18px; border-radius: 18px;
-  font-size: 13px; opacity: 0;
-  transition: all 0.25s; pointer-events: none; z-index: 200; white-space: nowrap;
-}
-.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-/* ── LOADING ── */
-.loading-overlay {
-  display: none; position: fixed; inset: 0; z-index: 300;
-  background: rgba(0,0,0,0.38); align-items: center; justify-content: center;
-}
-.loading-overlay.show { display: flex; }
-.loading-box { background: #fff; border-radius: 14px; padding: 28px 36px; text-align: center; }
-.spinner {
-  width: 36px; height: 36px; border: 3.5px solid #eee;
-  border-top-color: var(--primary); border-radius: 50%;
-  animation: spin 0.75s linear infinite; margin: 0 auto 14px;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-.loading-text { font-size: 13.5px; color: var(--text-sub); }
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(10px);background:rgba(0,0,0,0.78);color:#fff;padding:9px 18px;border-radius:18px;font-size:13px;opacity:0;transition:all 0.25s;pointer-events:none;z-index:400;white-space:nowrap;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.loading-overlay{display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,0.38);align-items:center;justify-content:center;}
+.loading-overlay.show{display:flex;}
+.loading-box{background:#fff;border-radius:14px;padding:28px 36px;text-align:center;}
+.spinner{width:36px;height:36px;border:3.5px solid #eee;border-top-color:var(--primary);border-radius:50%;animation:spin 0.75s linear infinite;margin:0 auto 14px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.loading-text{font-size:13.5px;color:var(--text-sub);}
 </style>
 </head>
 <body>
-
 <div id="app">
 
-  <!-- TOPBAR -->
   <div class="topbar">
-    <button class="topbar-menu" onclick="toggleMenu()">
-      <span></span><span></span><span></span>
-    </button>
+    <button class="topbar-menu" onclick="toggleMenu()"><span></span><span></span><span></span></button>
     <h1 id="topbar-title">법인 기본 정관</h1>
+    <button class="topbar-admin" onclick="openAdminLogin()" title="관리자">⚙</button>
   </div>
 
-  <!-- SCROLL AREA -->
   <div class="scroll-area" id="scrollArea">
 
     <!-- PAGE 1 -->
@@ -326,136 +179,101 @@ body {
       <div class="counter-strip">
         <span>창립 발기인</span><strong id="counter-display">0</strong><span>/ 50명 모집 중</span>
       </div>
-      <div class="card">
-        <div class="card-body">
-          <div class="card-title">📋 법인 기본 정관</div>
-          <div class="doc-text">
-            <div class="doc-chapter">[제1장 총칙]</div>
-            <div class="doc-article"><strong>제1조(명칭)</strong> 이 법인은 "재단법인 마중물 장학회"(이하 "본회"라 한다)라 한다.</div>
-            <div class="doc-article"><strong>제2조(목적)</strong> 본회는 경제적 어려움을 겪는 유능한 인재들에게 장학금을 지원하여 학업에 전념할 수 있도록 돕고, 사회 발전에 기여하는 인재를 육성함을 목적으로 한다.</div>
-            <div class="doc-article"><strong>제3조(사무소의 소재지)</strong> 본회의 사무소는 경기도 수원시에 둔다.</div>
-            <div class="doc-article"><strong>제4조(사업)</strong> 본회는 제2조의 목적을 달성하기 위하여 다음의 사업을 한다.<br>① 국내외 유학생 및 저소득 청소년에 대한 장학금 지급<br>② 장학생 선발 및 관리에 관한 사항<br>③ 학술·문화 교류 행사의 기획 및 운영<br>④ 한국-베트남 교육 협력 사업<br>⑤ 기타 본회의 목적달성에 필요한 사업</div>
-            <div class="doc-chapter">[제2장 회원]</div>
-            <div class="doc-article"><strong>제5조(회원의 종류)</strong> 본회의 회원은 다음 각 호와 같이 구분한다.<br>① 창립 발기인: 법인 설립에 동의하고 약정금을 납부하는 자<br>② 정회원: 본회의 목적에 동의하고 가입 절차를 완료한 자<br>③ 후원회원: 본회의 사업을 재정적으로 지원하는 자</div>
-            <div class="doc-article"><strong>제6조(입회)</strong> 본회에 가입하고자 하는 자는 소정의 가입 신청서를 제출하고 이사회의 승인을 얻어야 한다.</div>
-            <div class="doc-article"><strong>제7조(회원의 권리)</strong> 회원은 총회에 출석하여 의결권을 행사할 수 있다.</div>
-            <div class="doc-article"><strong>제8조(회원의 의무)</strong> 회원은 본 정관 및 총회·이사회의 의결 사항을 준수하고 소정의 회비를 납부하여야 한다.</div>
-            <div class="doc-chapter">[제3장 임원]</div>
-            <div class="doc-article"><strong>제9조(임원의 종류)</strong> 본회에 다음의 임원을 둔다.<br>① 이사장 1인&nbsp;&nbsp;② 이사 5인 이상 15인 이하&nbsp;&nbsp;③ 감사 2인</div>
-            <div class="doc-article"><strong>제10조(임원의 임기)</strong> 이사의 임기는 2년으로 하고, 감사의 임기는 2년으로 한다. 임원은 연임할 수 있다.</div>
-          </div>
+      <div class="card"><div class="card-body">
+        <div class="card-title">📋 법인 기본 정관</div>
+        <div class="doc-text">
+          <div class="doc-chapter">[제1장 총칙]</div>
+          <div class="doc-article"><strong>제1조(명칭)</strong> 이 법인은 "재단법인 마중물 장학회"(이하 "본회"라 한다)라 한다.</div>
+          <div class="doc-article"><strong>제2조(목적)</strong> 본회는 경제적 어려움을 겪는 유능한 인재들에게 장학금을 지원하여 학업에 전념할 수 있도록 돕고, 사회 발전에 기여하는 인재를 육성함을 목적으로 한다.</div>
+          <div class="doc-article"><strong>제3조(사무소의 소재지)</strong> 본회의 사무소는 경기도 수원시에 둔다.</div>
+          <div class="doc-article"><strong>제4조(사업)</strong> 본회는 제2조의 목적을 달성하기 위하여 다음의 사업을 한다.<br>① 국내외 유학생 및 저소득 청소년에 대한 장학금 지급<br>② 장학생 선발 및 관리에 관한 사항<br>③ 학술·문화 교류 행사의 기획 및 운영<br>④ 한국-베트남 교육 협력 사업<br>⑤ 기타 본회의 목적달성에 필요한 사업</div>
+          <div class="doc-chapter">[제2장 회원]</div>
+          <div class="doc-article"><strong>제5조(회원의 종류)</strong> 창립 발기인, 정회원, 후원회원으로 구분한다.</div>
+          <div class="doc-article"><strong>제6조(입회)</strong> 소정의 가입 신청서를 제출하고 이사회의 승인을 얻어야 한다.</div>
+          <div class="doc-article"><strong>제7조(회원의 권리)</strong> 회원은 총회에 출석하여 의결권을 행사할 수 있다.</div>
+          <div class="doc-article"><strong>제8조(회원의 의무)</strong> 정관 및 의결 사항을 준수하고 소정의 회비를 납부하여야 한다.</div>
+          <div class="doc-chapter">[제3장 임원]</div>
+          <div class="doc-article"><strong>제9조(임원의 종류)</strong> 이사장 1인, 이사 5인 이상 15인 이하, 감사 2인을 둔다.</div>
+          <div class="doc-article"><strong>제10조(임원의 임기)</strong> 이사·감사의 임기는 2년으로 하며 연임할 수 있다.</div>
         </div>
-      </div>
-      <div class="info-banner">💡 법인 설립에는 발기인 50인 이상의 참여가 필요합니다. <strong>회원가입</strong> 탭에서 창립 발기인으로 참여해 주세요.</div>
+      </div></div>
+      <div class="info-banner">💡 법인 설립에는 발기인 50인 이상의 참여가 필요합니다. <strong>회원가입</strong> 탭에서 참여해 주세요.</div>
     </div>
 
     <!-- PAGE 2 -->
     <div class="page" id="page-privacy">
       <div class="section-header"><h2>개인정보 수집 및 활용 동의서(안)</h2></div>
-      <div class="card">
-        <div class="card-body">
-          <div class="doc-text">
-            <div class="doc-article">(재)마중물 장학회는 법인 설립 및 발기인 관리를 위하여 아래와 같이 개인정보를 수집·이용하고자 합니다.</div>
-            <div class="doc-chapter">1. 수집하는 개인정보 항목</div>
-            <div class="doc-article">성명, 생년월일, 주소, 연락처(휴대전화), 약정 후원금액 및 납부 방식, 전자서명 데이터</div>
-            <div class="doc-chapter">2. 개인정보의 수집 및 이용 목적</div>
-            <div class="doc-article">• 비영리 법인(재단법인) 설립 허가 신청 및 발기인 명부 작성<br>• 장학회 창립총회 안내 및 법인 운영 관련 고지사항 전달<br>• 기부금 영수증 발급 및 후원금 관리(법인 설립 후)</div>
-            <div class="doc-chapter">3. 개인정보의 보유 및 이용 기간</div>
-            <div class="doc-article">개인정보 수집 및 이용 목적이 달성된 후에는 해당 정보를 지체 없이 파기합니다. 단, 관련 법령(사회복지법인 및 비영리법인 설립·운영에 관한 규칙 등)에 의하여 보존할 필요가 있는 경우 해당 기간 동안 보관합니다.</div>
-            <div class="doc-chapter">4. 동의의 거부 권리 및 불이익</div>
-            <div class="doc-article">귀하는 개인정보 수집 및 이용에 거부할 권리가 있습니다. 단, 동의를 거부하실 경우 법인 설립 발기인 등록이 불가능할 수 있음을 알려드립니다.</div>
-          </div>
+      <div class="card"><div class="card-body">
+        <div class="doc-text">
+          <div class="doc-article">(재)마중물 장학회는 법인 설립 및 발기인 관리를 위하여 아래와 같이 개인정보를 수집·이용합니다.</div>
+          <div class="doc-chapter">1. 수집하는 개인정보 항목</div>
+          <div class="doc-article">성명, 생년월일, 주소, 연락처(휴대전화), 약정 후원금액 및 납부 방식</div>
+          <div class="doc-chapter">2. 개인정보의 수집 및 이용 목적</div>
+          <div class="doc-article">• 비영리 법인 설립 허가 신청 및 발기인 명부 작성<br>• 창립총회 안내 및 법인 운영 관련 고지사항 전달<br>• 기부금 영수증 발급 및 후원금 관리(법인 설립 후)</div>
+          <div class="doc-chapter">3. 개인정보의 보유 및 이용 기간</div>
+          <div class="doc-article">수집 및 이용 목적 달성 후 지체 없이 파기합니다. 단, 관련 법령에 의해 보존이 필요한 경우 해당 기간 동안 보관합니다.</div>
+          <div class="doc-chapter">4. 동의의 거부 권리 및 불이익</div>
+          <div class="doc-article">동의를 거부할 권리가 있으나, 거부 시 발기인 등록이 불가능할 수 있습니다.</div>
         </div>
-      </div>
+      </div></div>
     </div>
 
     <!-- PAGE 3 -->
     <div class="page" id="page-join">
       <div id="formView">
-        <div class="form-page-title">
-          <h2>창립 멤버 가입</h2>
-          <p>발기인 정보를 입력해 주세요</p>
-        </div>
-        <div class="card">
-          <div class="card-body">
-            <div class="form-group">
-              <div class="form-label">이름 <span class="required">필수입력</span></div>
-              <input type="text" class="form-input" id="f_name" placeholder="실명을 입력해 주세요" autocomplete="name">
-            </div>
-            <div class="form-group">
-              <div class="form-label">생년월일 (6자리) <span class="required">필수입력</span></div>
-              <input type="text" class="form-input" id="f_birth" placeholder="예) 850315" maxlength="6" inputmode="numeric">
-            </div>
-            <div class="form-group">
-              <div class="form-label">연락처 (-제외) <span class="required">필수입력</span></div>
-              <input type="tel" class="form-input" id="f_phone" placeholder="예) 01012345678" maxlength="11" inputmode="numeric">
-            </div>
-            <div class="form-group">
-              <div class="form-label">주소 <span class="required">필수입력</span></div>
-              <button class="address-search-btn" onclick="searchAddress()">🔍 주소 검색 (카카오 우편번호)</button>
-              <input type="text" class="form-input" id="f_addr1" placeholder="기본 주소" readonly
-                style="margin-bottom:7px;background:#f9f9f9;cursor:pointer;" onclick="searchAddress()">
-              <input type="text" class="form-input" id="f_addr2" placeholder="상세 주소 입력">
-            </div>
-            <div class="form-group">
-              <div class="form-label">약정금액 <span class="required">필수입력</span></div>
-              <div class="input-suffix">
-                <input type="number" class="form-input" id="f_amount" placeholder="0" inputmode="numeric" min="0">
-                <span class="suffix-text">만원</span>
-              </div>
-            </div>
-            <div class="form-group">
-              <div class="form-label">납부방식</div>
-              <div class="payment-options">
-                <div class="payment-option">
-                  <input type="radio" name="payment" id="pay_transfer" value="계좌이체">
-                  <label for="pay_transfer"><span class="pay-icon">🏦</span>계좌이체</label>
-                </div>
-                <div class="payment-option">
-                  <input type="radio" name="payment" id="pay_card" value="신용카드">
-                  <label for="pay_card"><span class="pay-icon">💳</span>신용카드</label>
-                </div>
-                <div class="payment-option">
-                  <input type="radio" name="payment" id="pay_cms" value="CMS">
-                  <label for="pay_cms"><span class="pay-icon">🔄</span>CMS</label>
-                </div>
-              </div>
-            </div>
-            <div class="form-separator"></div>
-            <div class="form-group">
-              <div class="form-label" style="margin-bottom:10px;">필수 동의 항목</div>
-              <div class="checkbox-group">
-                <div class="checkbox-item" onclick="toggleCheck(this,'chk1')">
-                  <input type="checkbox" id="chk1">
-                  <div class="custom-check"><span class="check-mark">✓</span></div>
-                  <div class="checkbox-label">마중물 장학회 법인 설립 취지서 전문을 읽고 이해하였음에 동의합니다.<span class="req-tag">필수</span></div>
-                </div>
-                <div class="checkbox-item" onclick="toggleCheck(this,'chk2')">
-                  <input type="checkbox" id="chk2">
-                  <div class="custom-check"><span class="check-mark">✓</span></div>
-                  <div class="checkbox-label">법인 기본 정관 전문을 읽고 이해하였음을 동의합니다.<span class="req-tag">필수</span></div>
-                </div>
-                <div class="checkbox-item" onclick="toggleCheck(this,'chk3')">
-                  <input type="checkbox" id="chk3">
-                  <div class="custom-check"><span class="check-mark">✓</span></div>
-                  <div class="checkbox-label">개인정보 수집 및 활용 동의서(안)에 동의합니다.<span class="req-tag">필수</span></div>
-                </div>
-                <div class="checkbox-item" onclick="toggleCheck(this,'chk4')">
-                  <input type="checkbox" id="chk4">
-                  <div class="custom-check"><span class="check-mark">✓</span></div>
-                  <div class="checkbox-label">위 내용은 사실임을 확인하며 마중물 장학회 설립 발기인 가입에 동의합니다.<span class="req-tag">필수</span></div>
-                </div>
-              </div>
-            </div>
-            <div class="form-separator"></div>
-            <div class="form-group">
-              <div class="form-label">피드백 <span style="color:var(--text-hint);font-size:11px;font-weight:400;">선택</span></div>
-              <textarea class="form-input" id="f_feedback" placeholder="건의사항이나 문의사항을 자유롭게 남겨주세요" rows="3" style="resize:none;line-height:1.6;"></textarea>
-            </div>
-            <button class="submit-btn" id="submitBtn" onclick="submitForm()">전송</button>
-            <p style="text-align:center;font-size:11px;color:var(--text-hint);margin-top:10px;">제출된 정보는 법인 설립 목적으로만 활용됩니다</p>
+        <div class="form-page-title"><h2>창립 멤버 가입</h2><p>발기인 정보를 입력해 주세요</p></div>
+        <div class="card"><div class="card-body">
+          <div class="form-group">
+            <div class="form-label">이름 <span class="required">필수입력</span></div>
+            <input type="text" class="form-input" id="f_name" placeholder="실명을 입력해 주세요" autocomplete="name">
           </div>
-        </div>
+          <div class="form-group">
+            <div class="form-label">생년월일 (6자리) <span class="required">필수입력</span></div>
+            <input type="text" class="form-input" id="f_birth" placeholder="예) 850315" maxlength="6" inputmode="numeric">
+          </div>
+          <div class="form-group">
+            <div class="form-label">연락처 (-제외) <span class="required">필수입력</span></div>
+            <input type="tel" class="form-input" id="f_phone" placeholder="예) 01012345678" maxlength="11" inputmode="numeric">
+          </div>
+          <div class="form-group">
+            <div class="form-label">주소 <span class="required">필수입력</span></div>
+            <button class="address-search-btn" onclick="searchAddress()">🔍 주소 검색 (카카오 우편번호)</button>
+            <input type="text" class="form-input" id="f_addr1" placeholder="기본 주소" readonly style="margin-bottom:7px;background:#f9f9f9;cursor:pointer;" onclick="searchAddress()">
+            <input type="text" class="form-input" id="f_addr2" placeholder="상세 주소 입력">
+          </div>
+          <div class="form-group">
+            <div class="form-label">약정금액 <span class="required">필수입력</span></div>
+            <div class="input-suffix">
+              <input type="number" class="form-input" id="f_amount" placeholder="0" inputmode="numeric" min="0">
+              <span class="suffix-text">만원</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="form-label">납부방식</div>
+            <div class="payment-options">
+              <div class="payment-option"><input type="radio" name="payment" id="pay_transfer" value="계좌이체"><label for="pay_transfer"><span class="pay-icon">🏦</span>계좌이체</label></div>
+              <div class="payment-option"><input type="radio" name="payment" id="pay_card" value="신용카드"><label for="pay_card"><span class="pay-icon">💳</span>신용카드</label></div>
+              <div class="payment-option"><input type="radio" name="payment" id="pay_cms" value="CMS"><label for="pay_cms"><span class="pay-icon">🔄</span>CMS</label></div>
+            </div>
+          </div>
+          <div class="form-separator"></div>
+          <div class="form-group">
+            <div class="form-label" style="margin-bottom:10px;">필수 동의 항목</div>
+            <div class="checkbox-group">
+              <div class="checkbox-item" onclick="toggleCheck(this,'chk1')"><input type="checkbox" id="chk1"><div class="custom-check"><span class="check-mark">✓</span></div><div class="checkbox-label">마중물 장학회 법인 설립 취지서 전문을 읽고 이해하였음에 동의합니다.<span class="req-tag">필수</span></div></div>
+              <div class="checkbox-item" onclick="toggleCheck(this,'chk2')"><input type="checkbox" id="chk2"><div class="custom-check"><span class="check-mark">✓</span></div><div class="checkbox-label">법인 기본 정관 전문을 읽고 이해하였음을 동의합니다.<span class="req-tag">필수</span></div></div>
+              <div class="checkbox-item" onclick="toggleCheck(this,'chk3')"><input type="checkbox" id="chk3"><div class="custom-check"><span class="check-mark">✓</span></div><div class="checkbox-label">개인정보 수집 및 활용 동의서(안)에 동의합니다.<span class="req-tag">필수</span></div></div>
+              <div class="checkbox-item" onclick="toggleCheck(this,'chk4')"><input type="checkbox" id="chk4"><div class="custom-check"><span class="check-mark">✓</span></div><div class="checkbox-label">위 내용은 사실임을 확인하며 마중물 장학회 설립 발기인 가입에 동의합니다.<span class="req-tag">필수</span></div></div>
+            </div>
+          </div>
+          <div class="form-separator"></div>
+          <div class="form-group">
+            <div class="form-label">피드백 <span style="color:var(--text-hint);font-size:11px;font-weight:400;">선택</span></div>
+            <textarea class="form-input" id="f_feedback" placeholder="건의사항이나 문의사항을 자유롭게 남겨주세요" rows="3" style="resize:none;line-height:1.6;"></textarea>
+          </div>
+          <button class="submit-btn" id="submitBtn" onclick="submitForm()">전송</button>
+          <p style="text-align:center;font-size:11px;color:var(--text-hint);margin-top:10px;">제출된 정보는 법인 설립 목적으로만 활용됩니다</p>
+        </div></div>
       </div>
       <div class="success-screen" id="successScreen">
         <div class="success-icon">✅</div>
@@ -465,100 +283,148 @@ body {
       </div>
     </div>
 
+    <!-- PAGE 4: 관리자 -->
+    <div class="page" id="page-admin">
+      <div class="admin-header"><h2>👤 관리자 페이지</h2><p>마중물 장학회 발기인 현황</p></div>
+      <div class="admin-stats">
+        <div class="stat-card"><div class="stat-num" id="admin-total">-</div><div class="stat-label">총 가입자</div></div>
+        <div class="stat-card"><div class="stat-num" id="admin-amount">-</div><div class="stat-label">총 약정(만원)</div></div>
+        <div class="stat-card"><div class="stat-num" id="admin-remain">-</div><div class="stat-label">목표 잔여</div></div>
+      </div>
+      <div class="admin-actions">
+        <button class="admin-btn btn-csv" onclick="exportCSV()">📥 CSV</button>
+        <button class="admin-btn btn-pdf" onclick="exportPDF()">📄 PDF 명부</button>
+        <button class="admin-btn btn-refresh" onclick="loadAdminData()">🔄 새로고침</button>
+      </div>
+      <div class="admin-table-wrap">
+        <table class="admin-table" id="adminTable">
+          <thead><tr><th>No</th><th>이름</th><th>생년월일</th><th>연락처</th><th>주소</th><th>약정금액</th><th>납부방식</th><th>가입일</th></tr></thead>
+          <tbody id="adminTableBody"><tr><td colspan="8" class="admin-empty">데이터를 불러오는 중...</td></tr></tbody>
+        </table>
+      </div>
+      <button class="admin-logout-btn" onclick="adminLogout()">🔓 로그아웃</button>
+    </div>
+
   </div><!-- /scroll-area -->
 
-  <!-- TAB BAR -->
-  <div class="tab-bar">
+  <div class="tab-bar" id="tabBar">
     <button class="tab-item active" id="tab-constitution" onclick="switchPage('constitution')">
-      <svg class="tab-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
-      </svg>
+      <svg class="tab-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
       <span class="tab-label">법인 기본 정관</span>
     </button>
     <button class="tab-item" id="tab-privacy" onclick="switchPage('privacy')">
-      <svg class="tab-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
-      </svg>
+      <svg class="tab-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
       <span class="tab-label">개인정보 수집 및<br>활용 동의</span>
     </button>
     <button class="tab-item" id="tab-join" onclick="switchPage('join')">
-      <svg class="tab-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/>
-      </svg>
+      <svg class="tab-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
       <span class="tab-label">회원가입</span>
     </button>
   </div>
 
 </div><!-- /app -->
 
-<div class="toast" id="toast"></div>
-<div class="loading-overlay" id="loadingOverlay">
-  <div class="loading-box">
-    <div class="spinner"></div>
-    <div class="loading-text">제출 중입니다...</div>
+<!-- 관리자 로그인 오버레이 -->
+<div class="admin-login-overlay" id="adminLoginOverlay">
+  <div class="admin-login-box">
+    <h3>🔐 관리자 로그인</h3>
+    <p>관리자 비밀번호를 입력해 주세요</p>
+    <div class="admin-login-error" id="adminLoginError">비밀번호가 틀렸습니다</div>
+    <input type="password" id="adminPwInput" placeholder="비밀번호" onkeydown="if(event.key==='Enter')checkAdminPw()">
+    <div class="admin-login-btns">
+      <button class="btn-cancel" onclick="closeAdminLogin()">취소</button>
+      <button class="btn-enter" onclick="checkAdminPw()">확인</button>
+    </div>
   </div>
 </div>
 
-<script type="module">
-  import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
-  import { getFirestore, collection, addDoc, getCountFromServer, serverTimestamp }
-    from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+<div class="toast" id="toast"></div>
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="loading-box"><div class="spinner"></div><div class="loading-text" id="loadingText">처리 중...</div></div>
+</div>
 
-  const firebaseConfig = {
- 
+<!-- Firebase -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getFirestore, collection, addDoc, getDocs, query, where, orderBy, getCountFromServer, serverTimestamp }
+  from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+const firebaseConfig = {
   apiKey: "AIzaSyBDjKjiuXivGh4FRc7Et_-PdugmuaAh56w",
   authDomain: "mjm-join.firebaseapp.com",
   projectId: "mjm-join",
   storageBucket: "mjm-join.firebasestorage.app",
   messagingSenderId: "1076117915984",
-  appId: "1:1076117915984:web:da14c4cf1f0880dc9e4455",
-  measurementId: "G-5DXKGFES3T"
-  };
+  appId: "1:1076117915984:web:da14c4cf1f0880dc9e4455"
+};
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-  async function loadCounter() {
-    try {
-      const snap = await getCountFromServer(collection(db, 'members'));
-      document.getElementById('counter-display').textContent = snap.data().count;
-    } catch(e) { console.warn('카운터 로드 실패:', e); }
-  }
-  loadCounter();
+async function loadCounter() {
+  try {
+    const snap = await getCountFromServer(collection(db, 'members'));
+    document.getElementById('counter-display').textContent = snap.data().count;
+  } catch(e) { console.warn(e); }
+}
+loadCounter();
 
-  window._submitToFirebase = async function(data) {
-    const ref = await addDoc(collection(db, 'members'), { ...data, createdAt: serverTimestamp() });
-    return ref.id;
-  };
+window._checkDuplicate = async function(phone) {
+  const q = query(collection(db, 'members'), where('phone', '==', phone));
+  const snap = await getDocs(q);
+  return !snap.empty;
+};
+
+window._submitToFirebase = async function(data) {
+  const ref = await addDoc(collection(db, 'members'), { ...data, createdAt: serverTimestamp() });
+  return ref.id;
+};
+
+window._loadMembers = async function() {
+  const q = query(collection(db, 'members'), orderBy('createdAt', 'asc'));
+  const snap = await getDocs(q);
+  return snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+};
 </script>
 
 <script>
+const ADMIN_PW = 'admin1234';
+let adminLoggedIn = false;
+let membersCache = [];
+
 function switchPage(name) {
   document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
   document.getElementById('page-' + name).classList.add('active');
-  document.getElementById('tab-' + name).classList.add('active');
+  if (document.getElementById('tab-' + name)) document.getElementById('tab-' + name).classList.add('active');
   document.getElementById('scrollArea').scrollTop = 0;
-  const titles = { constitution:'법인 기본 정관', privacy:'개인정보 수집 및 활용 동의', join:'회원가입' };
-  document.getElementById('topbar-title').textContent = titles[name];
+  const titles = { constitution:'법인 기본 정관', privacy:'개인정보 수집 및 활용 동의', join:'회원가입', admin:'관리자 페이지' };
+  document.getElementById('topbar-title').textContent = titles[name] || '';
 }
+
 function toggleCheck(el, id) {
   el.classList.toggle('checked');
   document.getElementById(id).checked = el.classList.contains('checked');
 }
+
 function searchAddress() {
-  new daum.Postcode({
-    oncomplete: function(data) {
-      document.getElementById('f_addr1').value = data.roadAddress || data.jibunAddress;
-      document.getElementById('f_addr2').focus();
-    }
-  }).open();
+  new daum.Postcode({ oncomplete: function(data) {
+    document.getElementById('f_addr1').value = data.roadAddress || data.jibunAddress;
+    document.getElementById('f_addr2').focus();
+  }}).open();
 }
+
 function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg; t.classList.add('show');
   setTimeout(() => t.classList.remove('show'), 2800);
 }
+function showLoading(msg) {
+  document.getElementById('loadingText').textContent = msg || '처리 중...';
+  document.getElementById('loadingOverlay').classList.add('show');
+}
+function hideLoading() { document.getElementById('loadingOverlay').classList.remove('show'); }
+
 function validate() {
   const v = id => document.getElementById(id).value.trim();
   if (!v('f_name')) { showToast('이름을 입력해 주세요'); return false; }
@@ -572,42 +438,48 @@ function validate() {
   }
   return true;
 }
+
 async function submitForm() {
   if (!validate()) return;
-  const payR = document.querySelector('input[name="payment"]:checked');
-  const data = {
-    name: document.getElementById('f_name').value.trim(),
-    birth: document.getElementById('f_birth').value.trim(),
-    phone: document.getElementById('f_phone').value.trim(),
-    address: document.getElementById('f_addr1').value.trim() + ' ' + document.getElementById('f_addr2').value.trim(),
-    amount: Number(document.getElementById('f_amount').value),
-    paymentMethod: payR ? payR.value : '미선택',
-    agreed_founding: true, agreed_constitution: true, agreed_privacy: true, agreed_factcheck: true,
-    feedback: document.getElementById('f_feedback').value.trim()
-  };
-  document.getElementById('loadingOverlay').classList.add('show');
+  const phone = document.getElementById('f_phone').value.trim();
+  showLoading('중복 확인 중...');
   document.getElementById('submitBtn').disabled = true;
   try {
-    if (typeof window._submitToFirebase === 'function') {
-      await window._submitToFirebase(data);
-    } else {
-      const ex = JSON.parse(localStorage.getItem('mazungmul') || '[]');
-      ex.push({ ...data, createdAt: new Date().toISOString() });
-      localStorage.setItem('mazungmul', JSON.stringify(ex));
-      await new Promise(r => setTimeout(r, 700));
+    if (typeof window._checkDuplicate === 'function') {
+      const isDup = await window._checkDuplicate(phone);
+      if (isDup) {
+        hideLoading();
+        document.getElementById('submitBtn').disabled = false;
+        showToast('이미 등록된 연락처입니다');
+        return;
+      }
     }
-    document.getElementById('loadingOverlay').classList.remove('show');
+    const payR = document.querySelector('input[name="payment"]:checked');
+    const data = {
+      name: document.getElementById('f_name').value.trim(),
+      birth: document.getElementById('f_birth').value.trim(),
+      phone,
+      address: document.getElementById('f_addr1').value.trim() + ' ' + document.getElementById('f_addr2').value.trim(),
+      amount: Number(document.getElementById('f_amount').value),
+      paymentMethod: payR ? payR.value : '미선택',
+      agreed_founding: true, agreed_constitution: true, agreed_privacy: true, agreed_factcheck: true,
+      feedback: document.getElementById('f_feedback').value.trim()
+    };
+    showLoading('제출 중입니다...');
+    if (typeof window._submitToFirebase === 'function') await window._submitToFirebase(data);
+    hideLoading();
     document.getElementById('formView').style.display = 'none';
     document.getElementById('successScreen').style.display = 'block';
     const el = document.getElementById('counter-display');
     el.textContent = String(Number(el.textContent) + 1);
   } catch(err) {
-    document.getElementById('loadingOverlay').classList.remove('show');
+    hideLoading();
     document.getElementById('submitBtn').disabled = false;
     showToast('오류가 발생했습니다. 다시 시도해 주세요.');
     console.error(err);
   }
 }
+
 function resetForm() {
   ['f_name','f_birth','f_phone','f_addr1','f_addr2','f_feedback'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('f_amount').value = '';
@@ -619,13 +491,113 @@ function resetForm() {
   document.getElementById('successScreen').style.display = 'none';
   switchPage('constitution');
 }
+
+function openAdminLogin() {
+  if (adminLoggedIn) { switchPage('admin'); return; }
+  document.getElementById('adminLoginOverlay').classList.add('show');
+  document.getElementById('adminPwInput').value = '';
+  document.getElementById('adminLoginError').style.display = 'none';
+  setTimeout(() => document.getElementById('adminPwInput').focus(), 150);
+}
+function closeAdminLogin() { document.getElementById('adminLoginOverlay').classList.remove('show'); }
+function checkAdminPw() {
+  if (document.getElementById('adminPwInput').value === ADMIN_PW) {
+    adminLoggedIn = true;
+    closeAdminLogin();
+    switchPage('admin');
+    loadAdminData();
+  } else {
+    document.getElementById('adminLoginError').style.display = 'block';
+    document.getElementById('adminPwInput').value = '';
+    document.getElementById('adminPwInput').focus();
+  }
+}
+function adminLogout() { adminLoggedIn = false; membersCache = []; switchPage('constitution'); }
+
+async function loadAdminData() {
+  document.getElementById('adminTableBody').innerHTML = '<tr><td colspan="8" class="admin-empty">불러오는 중...</td></tr>';
+  try {
+    membersCache = await window._loadMembers();
+    renderAdminTable(membersCache);
+  } catch(e) {
+    document.getElementById('adminTableBody').innerHTML = '<tr><td colspan="8" class="admin-empty">데이터 로드 실패. Firestore 규칙을 확인해 주세요.</td></tr>';
+    console.error(e);
+  }
+}
+
+function renderAdminTable(members) {
+  const totalAmount = members.reduce((s, m) => s + (m.amount || 0), 0);
+  document.getElementById('admin-total').textContent = members.length;
+  document.getElementById('admin-amount').textContent = totalAmount.toLocaleString();
+  document.getElementById('admin-remain').textContent = Math.max(0, 50 - members.length);
+  document.getElementById('counter-display').textContent = members.length;
+  if (members.length === 0) {
+    document.getElementById('adminTableBody').innerHTML = '<tr><td colspan="8" class="admin-empty">등록된 발기인이 없습니다</td></tr>';
+    return;
+  }
+  document.getElementById('adminTableBody').innerHTML = members.map((m, i) => {
+    const date = m.createdAt ? new Date(m.createdAt.seconds * 1000).toLocaleDateString('ko-KR') : '-';
+    const pay = m.paymentMethod || '미선택';
+    return `<tr>
+      <td>${i+1}</td><td><strong>${m.name||''}</strong></td>
+      <td>${m.birth||''}</td><td>${m.phone||''}</td>
+      <td style="max-width:130px;overflow:hidden;text-overflow:ellipsis;">${m.address||''}</td>
+      <td>${(m.amount||0).toLocaleString()}만원</td>
+      <td><span class="badge-pay badge-${pay}">${pay}</span></td>
+      <td>${date}</td>
+    </tr>`;
+  }).join('');
+}
+
+function exportCSV() {
+  if (!membersCache.length) { showToast('데이터가 없습니다'); return; }
+  const headers = ['No','이름','생년월일','연락처','주소','약정금액(만원)','납부방식','가입일','피드백'];
+  const rows = membersCache.map((m, i) => {
+    const date = m.createdAt ? new Date(m.createdAt.seconds*1000).toLocaleDateString('ko-KR') : '';
+    return [i+1, m.name||'', m.birth||'', m.phone||'', `"${(m.address||'').replace(/"/g,'""')}"`,
+      m.amount||0, m.paymentMethod||'', date, `"${(m.feedback||'').replace(/"/g,'""')}"`].join(',');
+  });
+  const blob = new Blob(['\uFEFF' + [headers.join(','), ...rows].join('\n')], { type:'text/csv;charset=utf-8;' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `마중물장학회_발기인명부_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  showToast('CSV 다운로드 완료');
+}
+
+function exportPDF() {
+  if (!membersCache.length) { showToast('데이터가 없습니다'); return; }
+  try {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation:'landscape', unit:'mm', format:'a4' });
+    doc.setFontSize(15);
+    doc.text('Mazungmul Scholarship Foundation - Founding Members', 14, 15);
+    doc.setFontSize(9);
+    doc.text(`Total: ${membersCache.length} members  |  ${new Date().toLocaleDateString('ko-KR')} 기준`, 14, 22);
+    doc.autoTable({
+      head: [['No','Name','Birth','Phone','Address','Amount','Payment','Date']],
+      body: membersCache.map((m,i) => {
+        const date = m.createdAt ? new Date(m.createdAt.seconds*1000).toLocaleDateString('ko-KR') : '';
+        return [i+1, m.name||'', m.birth||'', m.phone||'', (m.address||'').substring(0,28), `${m.amount||0}만원`, m.paymentMethod||'', date];
+      }),
+      startY: 26, styles:{fontSize:8.5, cellPadding:2.5},
+      headStyles:{fillColor:[26,79,58], textColor:255, fontStyle:'bold'},
+      alternateRowStyles:{fillColor:[232,245,238]},
+      columnStyles:{4:{cellWidth:55}}
+    });
+    doc.save(`마중물장학회_발기인명부_${new Date().toISOString().slice(0,10)}.pdf`);
+    showToast('PDF 다운로드 완료');
+  } catch(e) {
+    console.error(e); showToast('PDF 생성 중 오류가 발생했습니다');
+  }
+}
+
 function toggleMenu() { showToast('메뉴 기능은 추후 업데이트 예정입니다'); }
-window.switchPage = switchPage;
-window.toggleCheck = toggleCheck;
-window.searchAddress = searchAddress;
-window.submitForm = submitForm;
-window.resetForm = resetForm;
-window.toggleMenu = toggleMenu;
+
+window.switchPage=switchPage; window.toggleCheck=toggleCheck; window.searchAddress=searchAddress;
+window.submitForm=submitForm; window.resetForm=resetForm; window.openAdminLogin=openAdminLogin;
+window.closeAdminLogin=closeAdminLogin; window.checkAdminPw=checkAdminPw; window.adminLogout=adminLogout;
+window.loadAdminData=loadAdminData; window.exportCSV=exportCSV; window.exportPDF=exportPDF; window.toggleMenu=toggleMenu;
 </script>
 </body>
 </html>
