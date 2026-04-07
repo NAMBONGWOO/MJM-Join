@@ -536,8 +536,8 @@ body {
       <!-- 로그인 -->
       <div class="admin-login" id="adminLogin">
         <h2>🔐 관리자 로그인</h2>
-        <p class="admin-login-info"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4f3c2637392e233a2a0f28222e2623612c2022">[email&#160;protected]</a> 계정으로 로그인하세요</p>
-        <input type="email" class="form-input" id="adminEmail" value="sixvalue@gmail.com" style="max-width:300px;">
+        <p class="admin-login-info" id="adminLoginInfo">관리자 계정으로 로그인하세요</p>
+        <input type="email" class="form-input" id="adminEmail" style="max-width:300px;">
         <input type="password" class="form-input" id="adminPw" placeholder="비밀번호 입력"
                style="max-width:300px;" onkeydown="if(event.key==='Enter')adminLogin()">
         <p class="admin-login-err" id="adminErr">이메일 또는 비밀번호가 올바르지 않습니다</p>
@@ -645,7 +645,7 @@ body {
 </div>
 
 <!-- Firebase -->
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module">
+<script type="module">
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
   import {
     getFirestore, collection, addDoc, getDocs, doc,
@@ -1086,3 +1086,18 @@ window.adminLogin = adminLogin;
 window.adminLogout = adminLogout;
 window.loadAdminData = loadAdminData;
 window.startEdit = startEdit;
+window.saveEdit = saveEdit;
+window.cancelEdit = cancelEdit;
+window.confirmDelete = confirmDelete;
+window.closeConfirm = closeConfirm;
+window.downloadCSV = downloadCSV;
+window.generatePDF = generatePDF;
+
+// 이메일 자동 입력 (Cloudflare 난독화 방지용)
+document.addEventListener("DOMContentLoaded", function() {
+  const em = document.getElementById("adminEmail");
+  if (em) em.value = ["sixvalue", "gmail.com"].join("@");
+});
+</script>
+</body>
+</html>
